@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Cătălin Drive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --s:#0f0d0a;--s2:#1e1b16;--s3:#2a241c;
+  --amber:#f2b418;--amber-dk:#d99f0a;
+  --bg:#f2f4f8;--card:#fff;
+  --tx:#14120f;--tx2:#3b352c;--tx3:#6b6252;
+  --border:rgba(20,18,15,.1);
+  --danger:#e53e3e;--success:#38a169;--info:#3b82f6;
+  --r:12px;--r-lg:18px;
+  --sh:0 1px 3px rgba(20,18,15,.05),0 4px 16px rgba(20,18,15,.08);
+  --ff:"Figtree",system-ui,sans-serif;
+  --ffd:"Baloo 2",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--ff);font-size:15px;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+input,select,textarea,button{font-family:inherit;font-size:inherit}
+a{color:var(--amber)}
+
+/* ── LOGIN ── */
+#login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--s)}
+.login-card{background:var(--card);border-radius:24px;padding:40px 48px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+.login-logo{font-family:var(--ffd);font-weight:800;font-size:22px;color:var(--tx);margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--tx3);margin:0 0 32px}
+.login-card label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:6px}
+.login-card input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--r);font-size:15px;outline:none;transition:border .15s}
+.login-card input:focus{border-color:var(--amber)}
+.login-card .btn-primary{margin-top:20px;width:100%}
+#login-err{color:var(--danger);font-size:13px;margin-top:10px;display:none}
+.login-hint{margin-top:20px;font-size:12px;color:var(--tx3);background:#fdf8ee;border-radius:8px;padding:10px 14px}
+.login-hint b{color:var(--tx2)}
+
+/* ── APP LAYOUT ── */
+#app{display:none;min-height:100vh}
+.app-layout{display:flex;min-height:100vh}
+#sidebar{
+  width:256px;flex-shrink:0;background:var(--s);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+@media(max-width:768px){
+  .app-layout{flex-direction:column}
+  #sidebar{width:100%;height:auto;position:static}
+}
+.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-logo-name{font-family:var(--ffd);font-weight:800;font-size:17px;color:#f8f4ed}
+.sb-logo-sub{font-size:11px;color:rgba(248,244,237,.4);letter-spacing:.1em;text-transform:uppercase}
+.sb-section{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(248,244,237,.3);padding:20px 20px 6px}
+.sb-nav{flex:1;padding:4px 12px}
+.sb-btn{
+  display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;
+  background:none;border:0;cursor:pointer;
+  font:inherit;font-size:14px;font-weight:500;color:rgba(248,244,237,.65);
+  border-radius:10px;transition:background .15s,color .15s;text-align:left;
+  margin-bottom:2px;
+}
+.sb-btn svg{opacity:.7;flex-shrink:0}
+.sb-btn:hover{background:var(--s2);color:#f8f4ed}
+.sb-btn:hover svg{opacity:1}
+.sb-btn.active{background:rgba(242,180,24,.15);color:var(--amber);font-weight:600}
+.sb-btn.active svg{opacity:1;color:var(--amber)}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-version{font-size:11px;color:rgba(248,244,237,.25);margin-bottom:10px}
+.sb-logout{display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;font-size:13px;color:rgba(248,244,237,.45);padding:6px 0;transition:color .15s}
+.sb-logout:hover{color:var(--danger)}
+
+/* ── MAIN CONTENT ── */
+#main-content{flex:1;overflow-y:auto}
+.page-head{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:18px clamp(16px,3vw,32px);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:10;
+}
+.page-head-title{font-family:var(--ffd);font-weight:700;font-size:20px}
+.page-head-sub{font-size:13px;color:var(--tx3);margin-top:2px}
+.page-body{padding:clamp(16px,3vw,28px)}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 20px;
+  background:var(--amber);color:var(--tx);font-weight:700;font-size:14px;
+  border:none;border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 4px 16px rgba(242,180,24,.32);
+}
+.btn-primary:hover{background:var(--amber-dk);transform:translateY(-1px);box-shadow:0 6px 20px rgba(242,180,24,.45)}
+.btn-primary:active{transform:scale(.97)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 20px;
+  background:transparent;color:var(--tx);font-weight:600;font-size:14px;
+  border:1.5px solid var(--border);border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:background .15s,border-color .15s;
+}
+.btn-secondary:hover{background:rgba(20,18,15,.05);border-color:rgba(20,18,15,.2)}
+.btn-danger{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 16px;
+  background:transparent;color:var(--danger);font-weight:600;font-size:13px;
+  border:1.5px solid rgba(229,62,62,.3);border-radius:999px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.btn-danger:hover{background:rgba(229,62,62,.08);border-color:var(--danger)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-icon{
+  width:34px;height:34px;border-radius:8px;border:0;cursor:pointer;
+  display:grid;place-items:center;background:rgba(20,18,15,.06);
+  color:var(--tx2);transition:background .15s,color .15s;
+}
+.btn-icon:hover{background:rgba(20,18,15,.12);color:var(--tx)}
+.btn-icon.danger:hover{background:rgba(229,62,62,.1);color:var(--danger)}
+
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh);margin-bottom:16px}
+.card-sm{padding:16px 20px}
+.card-title{font-family:var(--ffd);font-weight:700;font-size:18px;margin:0 0 4px}
+.card-sub{font-size:13px;color:var(--tx3);margin:0 0 18px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r-lg);background:var(--card);box-shadow:var(--sh)}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);padding:12px 16px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:#fafafa}
+.td-code{font-family:var(--ffd);font-weight:800;font-size:17px}
+.td-name{font-size:12px;color:var(--tx3);margin-top:2px}
+.td-price{font-family:var(--ffd);font-weight:800;font-size:18px}
+.td-actions{display:flex;align-items:center;gap:6px}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 14px;border:1.5px solid var(--border);
+  border-radius:10px;font-size:15px;outline:none;
+  transition:border-color .15s,box-shadow .15s;background:#fff;color:var(--tx);
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  border-color:var(--amber);box-shadow:0 0 0 3px rgba(242,180,24,.15);
+}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-hint{font-size:12px;color:var(--tx3);margin-top:5px}
+.form-section{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.form-section:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.form-section-title{font-family:var(--ffd);font-weight:700;font-size:16px;margin:0 0 14px;color:var(--tx)}
+
+/* ── CHECKBOXES ── */
+.check-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.check-pill{
+  display:flex;align-items:center;gap:7px;padding:7px 14px;
+  border:1.5px solid var(--border);border-radius:999px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--tx2);transition:all .15s;
+  user-select:none;
+}
+.check-pill input{display:none}
+.check-pill:has(input:checked){background:rgba(242,180,24,.15);border-color:var(--amber);color:var(--tx)}
+.check-pill:hover{border-color:var(--amber)}
+
+/* ── MODAL ── */
+#modal{position:fixed;inset:0;z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+#modal.open{display:flex}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,13,10,.6);backdrop-filter:blur(4px)}
+.modal-box{
+  position:relative;z-index:1;background:var(--card);
+  border-radius:var(--r-lg);width:100%;max-width:580px;
+  box-shadow:0 24px 64px rgba(0,0,0,.3);
+  animation:modalIn .22s cubic-bezier(.16,1,.3,1) both;
+  margin:auto;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(-12px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-title{font-family:var(--ffd);font-weight:700;font-size:18px}
+.modal-close{background:none;border:0;cursor:pointer;color:var(--tx3);font-size:22px;line-height:1;padding:4px;border-radius:6px;transition:color .12s,background .12s}
+.modal-close:hover{color:var(--tx);background:rgba(20,18,15,.07)}
+.modal-body{padding:24px}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border);background:#fafafa;border-radius:0 0 var(--r-lg) var(--r-lg)}
+
+/* ── TOASTS ── */
+#toasts{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;border-radius:12px;background:var(--tx);color:#f8f4ed;
+  font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  animation:toastIn .25s var(--ease,ease) both;min-width:240px;max-width:360px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast.success{background:var(--success)}
+.toast.danger{background:var(--danger)}
+.toast.info{background:var(--info)}
+.toast-icon{flex-shrink:0;font-size:16px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.badge-active{background:rgba(56,161,105,.15);color:#276749}
+.badge-inactive{background:rgba(107,98,82,.1);color:var(--tx3)}
+.badge-amber{background:rgba(242,180,24,.2);color:#7a5500}
+
+/* ── STAT CARDS ── */
+.stat-card{background:var(--card);border-radius:var(--r-lg);padding:20px 24px;box-shadow:var(--sh)}
+.stat-n{font-family:var(--ffd);font-weight:800;font-size:36px;line-height:1;color:var(--amber);margin-bottom:4px}
+.stat-lbl{font-size:13px;color:var(--tx3)}
+
+/* ── INSTRUCTOR CARDS ── */
+.instr-card{
+  background:var(--card);border-radius:var(--r-lg);padding:20px;box-shadow:var(--sh);
+  display:flex;flex-direction:column;gap:10px;
+}
+.instr-avatar{
+  width:56px;height:56px;border-radius:16px;background:rgba(242,180,24,.18);
+  display:grid;place-items:center;font-family:var(--ffd);font-weight:800;font-size:20px;color:var(--amber);
+  flex-shrink:0;
+}
+.instr-name{font-family:var(--ffd);font-weight:700;font-size:17px}
+.instr-role{font-size:13px;color:var(--tx3)}
+.instr-cats{font-size:12px;font-weight:600;color:var(--tx2);background:#fdf1d3;padding:4px 12px;border-radius:999px;width:fit-content}
+.instr-actions{display:flex;gap:8px;margin-top:auto}
+
+/* ── OFFER CARDS ── */
+.offer-card{
+  background:var(--card);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--sh);
+  border-left:4px solid var(--amber);
+  display:flex;flex-direction:column;gap:8px;
+}
+.offer-card.inactive{border-left-color:var(--border);opacity:.7}
+.offer-name{font-family:var(--ffd);font-weight:700;font-size:17px}
+.offer-tagline{font-size:13px;color:var(--tx3)}
+.offer-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;color:var(--tx3)}
+.offer-actions{display:flex;gap:8px;margin-top:6px}
+.offer-cats{display:flex;gap:6px;flex-wrap:wrap}
+.offer-cat{background:rgba(242,180,24,.15);color:#7a5500;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;gap:10px}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{
+  position:absolute;inset:0;background:#d1d5db;border-radius:999px;
+  transition:background .2s;
+}
+.toggle input:checked + .toggle-track{background:var(--success)}
+.toggle-thumb{
+  position:absolute;left:2px;top:2px;width:20px;height:20px;
+  background:#fff;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);
+  transition:transform .2s;
+}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(20px)}
+
+/* ── QUICK NAMES ── */
+.name-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.name-tag{
+  font-size:12px;padding:5px 12px;border-radius:999px;
+  background:#f2f4f8;border:1px solid var(--border);cursor:pointer;
+  transition:background .12s,border-color .12s;white-space:nowrap;
+}
+.name-tag:hover{background:rgba(242,180,24,.15);border-color:var(--amber);color:var(--tx)}
+
+/* ── ANNOUNCEMENT ── */
+.anmt-preview{
+  border-radius:12px;padding:14px 18px;font-size:15px;
+  background:rgba(242,180,24,.12);border:1px solid rgba(242,180,24,.3);
+  color:var(--tx2);
+}
+.anmt-preview.info{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3)}
+.anmt-preview.success{background:rgba(56,161,105,.1);border-color:rgba(56,161,105,.3)}
+.anmt-preview.danger{background:rgba(229,62,62,.1);border-color:rgba(229,62,62,.3)}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:48px 24px;color:var(--tx3)}
+.empty-state svg{opacity:.3;margin-bottom:12px}
+.empty-state h3{font-size:16px;color:var(--tx2);margin:0 0 6px}
+.divider{border:0;border-top:1px solid var(--border);margin:20px 0}
+.text-danger{color:var(--danger)}
+.text-success{color:var(--success)}
+.text-muted{color:var(--tx3)}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════ -->
+<div id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">Cătălin Drive</div>
+    <p class="login-sub">Panou de administrare</p>
+    <form onsubmit="tryLogin(event)">
+      <div class="form-group">
+        <label>Parolă</label>
+        <input type="password" id="pw-input" placeholder="Introdu parola" autocomplete="current-password">
+      </div>
+      <div id="login-err">Parolă incorectă. Încearcă din nou.</div>
+      <button type="submit" class="btn-primary">Intră în panou</button>
+    </form>
+    <div class="login-hint">Parola implicită: <b>catalindrive2026</b><br>Schimb-o din <b>Setări → Securitate</b>.</div>
+  </div>
+</div>
+
+<!-- ═══ APP ══════════════════════════════════════════════════════ -->
+<div id="app">
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="sb-logo">
+        <div class="sb-logo-name">Cătălin Drive</div>
+        <div class="sb-logo-sub">Admin Panel</div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-section">General</div>
+        <button class="sb-btn active" data-page="dashboard" onclick="navigate('dashboard')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="sb-btn" data-page="prices" onclick="navigate('prices')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Prețuri
+        </button>
+        <button class="sb-btn" data-page="offers" onclick="navigate('offers')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Oferte & Promoții
+        </button>
+        <div class="sb-section">Conținut</div>
+        <button class="sb-btn" data-page="instructors" onclick="navigate('instructors')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Instructori
+        </button>
+        <button class="sb-btn" data-page="testimonials" onclick="navigate('testimonials')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Recenzii
+        </button>
+        <button class="sb-btn" data-page="announcement" onclick="navigate('announcement')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zM5 17V5a2 2 0 012-2h10a2 2 0 012 2v12"/><path d="M12 17v4"/></svg>
+          Anunțuri
+        </button>
+        <div class="sb-section">Sistem</div>
+        <button class="sb-btn" data-page="settings" onclick="navigate('settings')">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Setări
+        </button>
+      </div>
+      <div class="sb-footer">
+        <div class="sb-version">v2.0 · 2026</div>
+        <button class="sb-logout" onclick="logout()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Deconectare
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div id="main-content">
+      <div class="page-head">
+        <div>
+          <div class="page-head-title" id="page-title">Dashboard</div>
+          <div class="page-head-sub" id="page-sub">Bun venit în panoul de administrare</div>
+        </div>
+        <div id="page-action"></div>
+      </div>
+      <div class="page-body" id="page-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-overlay" onclick="closeModal()"></div>
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════ */
+const LS_KEY = 'catalindrive_data';
+const LS_AUTH = 'catalindrive_auth';
+
+const DEFAULT_DATA = {
+  phone: "0755 457 783",
+  address: "Str. Ion Roată, 625100 Adjud, județul Vrancea",
+  schedule: {
+    "Luni–Vineri": {open:"09:00",close:"17:00",closed:false},
+    "Sâmbătă": {open:"",close:"",closed:true},
+    "Duminică": {open:"",close:"",closed:true}
+  },
+  prices: [
+    {code:"B",  name:"Autoturism",         hours:30, extra:70,  price:2800},
+    {code:"A",  name:"Motocicletă",         hours:20, extra:60,  price:1900},
+    {code:"C",  name:"Camion",              hours:20, extra:120, price:3900},
+    {code:"CE", name:"Camion cu remorcă",   hours:15, extra:140, price:3200},
+    {code:"D",  name:"Autobuz",             hours:20, extra:150, price:4500},
+    {code:"BE", name:"Autoturism cu remorcă",hours:15,extra:70,  price:1200},
+    {code:"Tr", name:"Tractor",             hours:20, extra:70,  price:1500}
+  ],
+  instructors: [
+    {id:1,name:"Cătălin Rusu",    role:"Instructor și administrator, 12 ani de experiență.",  cats:"B · BE · C · CE"},
+    {id:2,name:"Andrei Popa",     role:"Instructor practică, specializat pe categoriile grele.", cats:"C · CE · D"},
+    {id:3,name:"Mihaela Ionescu", role:"Instructor practică și curs de legislație.",            cats:"A · B · Tractor"}
+  ],
+  offers: [],
+  testimonials: [
+    {id:1,text:"Am luat permisul din prima. Mi-au explicat de fiecare dată calm, fără să mă grăbească, iar ultimele ore le-am făcut exact pe traseul de examen.",name:"Ioana M.",cat:"B",stars:5},
+    {id:2,text:"Aveam nevoie de C și CE pentru firmă. Program făcut după turele mele și dosar rezolvat în două săptămâni.",name:"Vasile T.",cat:"CE",stars:5},
+    {id:3,text:"Cel mai bun raport preț-calitate din zonă. Mașini curate, instructori serioși, fără costuri surpriză la final.",name:"Robert D.",cat:"B",stars:5}
+  ],
+  announcement: {active:false, text:"", type:"amber"},
+  stats: {students: 0, promotionRate: 92, yearsExperience: 12}
+};
+
+const DB = {
+  load() {
+    try { return Object.assign({}, DEFAULT_DATA, JSON.parse(localStorage.getItem(LS_KEY) || '{}')); }
+    catch { return {...DEFAULT_DATA}; }
+  },
+  save(data) {
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════════ */
+function getPassword() {
+  return localStorage.getItem('catalindrive_pw') || 'catalindrive2026';
+}
+function tryLogin(e) {
+  e.preventDefault();
+  const pw = document.getElementById('pw-input').value;
+  if(pw === getPassword()) {
+    localStorage.setItem(LS_AUTH, '1');
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    navigate('dashboard');
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+function logout() {
+  localStorage.removeItem(LS_AUTH);
+  location.reload();
+}
+if(localStorage.getItem(LS_AUTH) === '1') {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+const PAGE_META = {
+  dashboard:     {title:'Dashboard',        sub:'Rezumat activitate și date principale'},
+  prices:        {title:'Prețuri',           sub:'Editează prețurile pentru toate categoriile'},
+  offers:        {title:'Oferte & Promoții', sub:'Creează și gestionează oferte promoționale'},
+  instructors:   {title:'Instructori',       sub:'Administrează echipa de instructori'},
+  testimonials:  {title:'Recenzii',          sub:'Gestionează mărturiile cursanților'},
+  announcement:  {title:'Anunțuri',          sub:'Mesaje afișate pe site'},
+  settings:      {title:'Setări',            sub:'Informații de contact, program și securitate'}
+};
+
+function navigate(page) {
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  const m = PAGE_META[page] || {};
+  document.getElementById('page-title').textContent = m.title || page;
+  document.getElementById('page-sub').textContent = m.sub || '';
+  document.getElementById('page-action').innerHTML = '';
+  const pages = {dashboard, prices, offers, instructors, testimonials, announcement, settings};
+  if(pages[page]) pages[page]();
+}
+
+/* ═══════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════ */
+function fmt(n) {
+  return Number(n).toLocaleString('ro-RO') + ' lei';
+}
+function escH(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function genId() { return Date.now() + Math.floor(Math.random()*1000); }
+function fmtDate(d) {
+  if(!d) return '—';
+  const [y,m,dd] = d.split('-');
+  return `${dd}.${m}.${y}`;
+}
+function isActive(offer) {
+  if(!offer.active) return false;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const s = offer.startDate ? new Date(offer.startDate) : null;
+  const e = offer.endDate   ? new Date(offer.endDate)   : null;
+  if(s && now < s) return false;
+  if(e && now > e) return false;
+  return true;
+}
+function applyDiscount(price, offer) {
+  if(!offer) return price;
+  if(offer.discountType === 'percent') return Math.round(price * (1 - offer.discountValue/100));
+  return Math.max(0, price - offer.discountValue);
+}
+function discountLabel(offer) {
+  if(offer.discountType === 'percent') return `-${offer.discountValue}%`;
+  return `-${offer.discountValue} lei`;
+}
+const ALL_CATS = ['B','A','C','CE','D','BE','Tr'];
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+function toast(msg, type='success') {
+  const icons = {success:'✓', danger:'✕', info:'ℹ'};
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]||'✓'}</span><span>${escH(msg)}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════ */
+function openModal(html) {
+  document.getElementById('modal-box').innerHTML = html;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════════ */
+function dashboard() {
+  const d = DB.load();
+  const activeOffers = d.offers.filter(isActive).length;
+  const totalOffers  = d.offers.length;
+  document.getElementById('page-body').innerHTML = `
+  <div class="grid-4" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-n">${d.prices.length}</div><div class="stat-lbl">Categorii predicate</div></div>
+    <div class="stat-card"><div class="stat-n">${d.instructors.length}</div><div class="stat-lbl">Instructori activi</div></div>
+    <div class="stat-card"><div class="stat-n">${activeOffers}</div><div class="stat-lbl">Oferte active acum</div></div>
+    <div class="stat-card"><div class="stat-n">${d.stats?.promotionRate||92}%</div><div class="stat-lbl">Rată de promovare</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Prețuri curente</div>
+      <div class="card-sub">Ultima categorie modificată</div>
+      <table style="width:100%">
+        <thead><tr><th>Cat.</th><th>Preț pachet</th><th>Ore</th></tr></thead>
+        <tbody>
+          ${d.prices.map(p=>`
+          <tr>
+            <td><span style="font-family:var(--ffd);font-weight:800">${escH(p.code)}</span><br><span style="font-size:12px;color:var(--tx3)">${escH(p.name)}</span></td>
+            <td style="font-family:var(--ffd);font-weight:700;font-size:17px">${fmt(p.price)}</td>
+            <td style="color:var(--tx3)">${p.hours} ore</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">Oferte active</div>
+        ${activeOffers === 0
+          ? `<p style="color:var(--tx3);font-size:14px;margin:8px 0 0">Nicio ofertă activă în acest moment. <a href="#" onclick="navigate('offers');return false">Creează una</a>.</p>`
+          : d.offers.filter(isActive).map(o=>`
+          <div class="offer-card" style="margin-bottom:10px">
+            <div class="offer-name">${escH(o.name)}</div>
+            <div class="offer-meta">${discountLabel(o)} · ${o.categories.join(', ')} · până pe ${fmtDate(o.endDate)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Acces rapid</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+          <button class="btn-secondary" onclick="navigate('prices')" style="justify-content:flex-start">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Modifică prețuri
+          </button>
+          <button class="btn-secondary" onclick="navigate('offers')" style="justify-content:flex-start">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adaugă ofertă nouă
+          </button>
+          <a href="index.html" target="_blank" class="btn-secondary" style="justify-content:flex-start;text-decoration:none;color:var(--tx)">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Deschide site-ul
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRICES
+═══════════════════════════════════════════════════════ */
+function prices() {
+  const d = DB.load();
+  document.getElementById('page-body').innerHTML = `
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Categorie</th><th>Ore practică</th><th>Ora suplimentară</th><th>Preț pachet</th><th style="text-align:right">Acțiuni</th>
+      </tr></thead>
+      <tbody>
+        ${d.prices.map((p,i)=>`
+        <tr>
+          <td><div class="td-code">${escH(p.code)}</div><div class="td-name">${escH(p.name)}</div></td>
+          <td>${p.hours} ore</td>
+          <td>${p.extra} lei</td>
+          <td><div class="td-price">${fmt(p.price)}</div></td>
+          <td style="text-align:right">
+            <div class="td-actions" style="justify-content:flex-end">
+              <button class="btn-icon" title="Editează" onclick="editPrice(${i})">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--tx3);margin-top:12px">Prețurile sunt orientative. Confirmați tariful exact la înscriere.</p>`;
+}
+
+function editPrice(idx) {
+  const d = DB.load();
+  const p = d.prices[idx];
+  openModal(`
+  <div class="modal-head">
+    <div class="modal-title">Editează prețul — Categoria ${escH(p.code)}</div>
+    <button class="modal-close" onclick="closeModal()">×</button>
+  </div>
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Cod categorie</label>
+        <input type="text" id="ep-code" value="${escH(p.code)}" readonly style="background:#f4f6fb">
+      </div>
+      <div class="form-group">
+        <label>Denumire</label>
+        <input type="text" id="ep-name" value="${escH(p.name)}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Ore practică (minim legal)</label>
+        <input type="number" id="ep-hours" value="${p.hours}" min="1">
+      </div>
+      <div class="form-group">
+        <label>Ora suplimentară (lei)</label>
+        <input type="number" id="ep-extra" value="${p.extra}" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Preț pachet complet (lei)</label>
+      <input type="number" id="ep-price" value="${p.price}" min="0">
+      <div class="form-hint">Fără zecimale. Exemplu: 2800 → se afișează „2.800 lei".</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-secondary" onclick="closeModal()">Anulează</button>
+    <button class="btn-primary" onclick="savePrice(${idx})">Salvează</button>
+  </div>`);
+}
+
+function savePrice(idx) {
+  const d = DB.load();
+  d.prices[idx] = {
+    ...d.prices[idx],
+    name:  document.getElementById('ep-name').value.trim(),
+    hours: parseInt(document.getElementById('ep-hours').value)||0,
+    extra: parseInt(document.getElementById('ep-extra').value)||0,
+    price: parseInt(document.getElementById('ep-price').value)||0
+  };
+  DB.save(d);
+  closeModal();
+  prices();
+  toast('Prețul a fost actualizat.');
+}
+
+/* ═══════════════════════════════════════════════════════
+   OFFERS
+═══════════════════════════════════════════════════════ */
+const OFFER_NAMES = [
+  'Pachet Start – Categoria B','Ofertă de Primăvară 2026',
+  'Promoție Back to School','Reducere Grup (3+ persoane)',
+  'Pachet Profesional Transport','Ofertă Familie',
+  'Reducere Sezon Estival','Pachet All-Inclusive',
+  'Promo Permis în 6 Săptămâni','Ofertă Categorie Multiplă'
+];
+
+function offers() {
+  const d = DB.load();
+  const el = document.getElementById('page-action');
+  el.innerHTML = `<button class="btn-primary" onclick="newOffer()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ofertă nouă</button>`;
+
+  if(d.offers.length === 0) {
+    document.getElementById('page-body').innerHTML = `
+    <div class="empty-state">
+      <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <h3>Nicio ofertă creată</h3>
+      <p>Adaugă prima ofertă promoțională pentru cursanți.</p>
+      <button class="btn-primary" onclick="newOffer()">Creează ofertă</button>
+    </div>`;
+    return;
+  }
+
+  document.getElementById('page-body').innerHTML = `
+  <div class="grid-2">
+    ${d.offers.map((o,i)=>`
+    <div class="offer-card ${isActive(o)?'':'inactive'}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <div class="offer-name">${escH(o.name)}</div>
+          ${o.tagline?`<div class="offer-tagline">${escH(o.tagline)}</div>`:''}
+        </div>
+        <span class="badge ${isActive(o)?'badge-active':'badge-inactive'}">${isActive(o)?'Activ':'Inactiv'}</span>
+      </div>
+      <div class="offer-meta">
+        <span style="font-weight:700;color:var(--amber-dk)">${discountLabel(o)}</span>
+        ${o.startDate?`<span>${fmtDate(o.startDate)} – ${fmtDate(o.endDate)}</span>`:'<span>Fără limită de timp</span>'}
+      </div>
+      <div class="offer-cats">
+        ${o.categories.map(c=>`<span class="offer-cat">${escH(c)}</span>`).join('')}
+      </div>
+      <div class="offer-actions">
+        <button class="btn-secondary btn-sm" onclick="editOffer(${i})">Editează</button>
+        <label class="toggle-wrap" title="${o.active?'Dezactivează':'Activează'}">
+          <label class="toggle">
+            <input type="checkbox" ${o.active?'checked':''} onchange="toggleOffer(${i},this.checked)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span style="font-size:13px;color:var(--tx3)">${o.active?'Activă':'Inactivă'}</span>
+        </label>
+        <button class="btn-danger btn-sm" onclick="deleteOffer(${i})">Șterge</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function toggleOffer(i, val) {
+  const d = DB.load(); d.offers[i].active = val; DB.save(d);
+  toast(val ? 'Ofertă activată.' : 'Ofertă dezactivată.', 'info');
+  offers();
+}
+function deleteOffer(i) {
+  if(!confirm('Ștergi această ofertă?')) return;
+  const d = DB.load(); d.offers.splice(i,1); DB.save(d); offers(); toast('Ofertă ștearsă.','danger');
+}
+
+function offerFormHTML(o={}) {
+  return `
+  <div class="form-section">
+    <div class="form-section-title">Identificare</div>
+    <div class="form-group">
+      <label>Denumire ofertă *</label>
+      <input type="text" id="of-name" value="${escH(o.name||'')}" placeholder="ex: Pachet Start – Categoria B">
+      <div class="name-suggestions">
+        ${OFFER_NAMES.map(n=>`<span class="name-tag" onclick="document.getElementById('of-name').value=this.textContent">${n}</span>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Slogan / tagline</label>
+      <input type="text" id="of-tagline" value="${escH(o.tagline||'')}" placeholder="ex: Economisești 300 lei la Categoria B">
+    </div>
+    <div class="form-group">
+      <label>Descriere (opțional)</label>
+      <textarea id="of-desc" placeholder="Detalii suplimentare despre ofertă">${escH(o.description||'')}</textarea>
+    </div>
+  </div>
+  <div class="form-section">
+    <div class="form-section-title">Reducere</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tip reducere</label>
+        <select id="of-dtype">
+          <option value="percent" ${o.discountType==='percent'?'selected':''}>Procent (%)</option>
+          <option value="fixed"   ${o.discountType==='fixed'  ?'selected':''}>Sumă fixă (lei)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valoare</label>
+        <input type="number" id="of-dval" value="${o.discountValue||''}" min="1" placeholder="ex: 10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Categorii incluse</label>
+      <div class="check-group">
+        ${ALL_CATS.map(c=>`
+        <label class="check-pill">
+          <input type="checkbox" name="of-cats" value="${c}" ${(o.categories||[]).includes(c)?'checked':''}>${c}
+        </label>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="form-section">
+    <div class="form-section-title">Perioadă de valabilitate</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Dată început</label>
+        <input type="date" id="of-start" value="${o.startDate||''}">
+      </div>
+      <div class="form-group">
+        <label>Dată final</label>
+        <input type="date" id="of-end" value="${o.endDate||''}">
+      </div>
+    </div>
+    <div class="form-hint">Lasă goale pentru ofertă fără limită de timp.</div>
+  </div>
+  <div class="form-section">
+    <div class="form-section-title">Stare</div>
+    <label class="toggle-wrap" style="gap:14px">
+      <label class="toggle">
+        <input type="checkbox" id="of-active" ${o.active!==false?'checked':''}>
+        <div class="toggle-track"></div><div class="toggle-thumb"></div>
+      </label>
+      <span style="font-size:15px;font-weight:500">Ofertă activă</span>
+    </label>
+  </div>`;
+}
+
+function newOffer() {
+  openModal(`
+  <div class="modal-head">
+    <div class="modal-title">Ofertă nouă</div>
+    <button class="modal-close" onclick="closeModal()">×</button>
+  </div>
+  <div class="modal-body" style="max-height:65vh;overflow-y:auto">${offerFormHTML()}</div>
+  <div class="modal-footer">
+    <button class="btn-secondary" onclick="closeModal()">Anulează</button>
+    <button class="btn-primary" onclick="saveOffer(-1)">Salvează oferta</button>
+  </div>`);
+}
+
+function editOffer(idx) {
+  const d = DB.load();
+  const o = d.offers[idx];
+  openModal(`
+  <div class="modal-head">
+    <div class="modal-title">Editează oferta</div>
+    <button class="modal-close" onclick="closeModal()">×</button>
+  </div>
+  <div class="modal-body" style="max-height:65vh;overflow-y:auto">${offerFormHTML(o)}</div>
+  <div class="modal-footer">
+    <button class="btn-secondary" onclick="closeModal()">Anulează</button>
+    <button class="btn-primary" onclick="saveOffer(${idx})">Actualizează</button>
+  </div>`);
+}
+
+function saveOffer(idx) {
+  const name = document.getElementById('of-name').value.trim();
+  if(!name){ toast('Completează denumirea ofertei.','danger'); return; }
+  const cats = [...document.querySelectorAll('input[name="of-cats"]:checked')].map(x=>x.value);
+  if(!cats.length){ toast('Selectează cel puțin o categorie.','danger'); return; }
+
+  const obj = {
+    id:            idx === -1 ? genId() : DB.load().offers[idx]?.id || genId(),
+    name,
+    tagline:       document.getElementById('of-tagline').value.trim(),
+    description:   document.getElementById('of-desc').value.trim(),
+    discountType:  document.getElementById('of-dtype').value,
+    discountValue: parseInt(document.getElementById('of-dval').value)||0,
+    categories:    cats,
+    startDate:     document.getElementById('of-start').value,
+    endDate:       document.getElementById('of-end').value,
+    active:        document.getElementById('of-active').checked
+  };
+
+  const d = DB.load();
+  if(idx === -1) d.offers.push(obj); else d.offers[idx] = obj;
+  DB.save(d);
+  closeModal();
+  offers();
+  toast(idx === -1 ? 'Ofertă creată cu succes.' : 'Ofertă actualizată.');
+}
+
+/* ═══════════════════════════════════════════════════════
+   INSTRUCTORS
+═══════════════════════════════════════════════════════ */
+function instructors() {
+  const d = DB.load();
+  document.getElementById('page-action').innerHTML = `
+    <button class="btn-primary" onclick="newInstructor()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adaugă instructor
+    </button>`;
+  document.getElementById('page-body').innerHTML = `
+  <div class="grid-3">
+    ${d.instructors.map((ins,i)=>`
+    <div class="instr-card">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="instr-avatar">${escH(ins.name.charAt(0))}</div>
+        <div>
+          <div class="instr-name">${escH(ins.name)}</div>
+          <div class="instr-role">${escH(ins.role)}</div>
+        </div>
+      </div>
+      <div class="instr-cats">${escH(ins.cats)}</div>
+      <div class="instr-actions">
+        <button class="btn-secondary btn-sm" onclick="editInstructor(${i})">Editează</button>
+        <button class="btn-danger btn-sm" onclick="deleteInstructor(${i})">Șterge</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function instrFormHTML(ins={}) {
+  return `
+  <div class="form-group">
+    <label>Nume complet *</label>
+    <input type="text" id="ins-name" value="${escH(ins.name||'')}" placeholder="ex: Mihai Ionescu">
+  </div>
+  <div class="form-group">
+    <label>Descriere rol / experiență</label>
+    <textarea id="ins-role" placeholder="ex: Instructor practică, 8 ani de experiență.">${escH(ins.role||'')}</textarea>
+  </div>
+  <div class="form-group">
+    <label>Categorii predicate</label>
+    <div class="check-group">
+      ${ALL_CATS.map(c=>`
+      <label class="check-pill">
+        <input type="checkbox" name="ins-cats" value="${c}" ${(ins.cats||'').includes(c)?'checked':''}>${c}
+      </label>`).join('')}
+    </div>
+    <div class="form-hint">Selectează categoriile pe care le predă acest instructor.</div>
+  </div>`;
+}
+
+function newInstructor() {
+  openModal(`
+  <div class="modal-head"><div class="modal-title">Instructor nou</div><button class="modal-close" onclick="closeModal()">×</button></div>
+  <div class="modal-body">${instrFormHTML()}</div>
+  <div class="modal-footer">
+    <button class="btn-secondary" onclick="closeModal()">Anulează</button>
+    <button class="btn-primary" onclick="saveInstructor(-1)">Adaugă</button>
+  </div>`);
+}
+
+function editInstructor(i) {
+  const d = DB.load(); const ins = d.instructors[i];
+  openModal(`
+  <div class="modal-head"><div class="modal-title">Editează instructor</div><button class="modal-close" onclick="closeModal()">×</button></div>
+  <div class="modal-body">${instrFormHTML(ins)}</div>
+  <div class="modal-footer">
+    <button class="btn-secondary" onclick="closeModal()">Anulează</button>
+    <button class="btn-primary" onclick="saveInstructor(${i})">Salvează</button>
+  </div>`);
+}
+
+function saveInstructor(idx) {
+  const name = document.getElementById('ins-name').value.trim();
+  if(!name){ toast('Completează numele.','danger'); return; }
+  const cats = [...document.querySelectorAll('input[name="ins-cats"]:checked')].map(x=>x.value).join(' · ');
+  const obj = {
+    id:   idx === -1 ? genId() : (DB.load().instructors[idx]?.id||genId()),
+    name,
+    role: document.getElementById('ins-role').value.trim(),
+    cats: cats || 'B'
+  };
+  const d = DB.load();
+  if(idx === -1) d.instructors.push(obj); else d.instructors[idx] = obj;
+  DB.save(d); closeModal(); instructors();
+  toast(idx === -1 ? 'Instructor adăugat.' : 'Instructor actualizat.');
+}
+
+function deleteInstructor(i) {
+  if(!confirm('Ștergi acest instructor?')) return;
+  const d = DB.load(); d.instructors.splice(i,1); DB.save(d); instructors(); toast('Instructor șters.','danger');
+}
+
+/* ═══════════════════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════════════════ */
+function testimonials() {
+  const d = DB.load();
+  document.getElementById('page-action').innerHTML = `
+    <button class="btn-primary" onclick="newTestimonial()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adaugă recenzie
+    </button>`;
+  document.getElementById('page-body').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:10px">
+    ${d.testimonials.map((t,i)=>`
+    <div class="card card-sm" style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="font-style:italic;color:var(--tx2);margin-bottom:8px">"${escH(t.text)}"</div>
+        <div style="font-size:13px;color:var(--tx3)">${escH(t.name)} · Categoria ${escH(t.cat)} · ${'★'.repeat(t.stars||5)}</div>
+      </div>
+      <div class="td-actions">
+        <button class="btn-icon" onclick="editTestimonial(${i})">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-icon danger" onclick="deleteTestimonial(${i})">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function testiFormHTML(t={}) {
+  return `
+  <div class="form-group"><label>Text recenzie *</label><textarea id="tt-text" rows="4" placeholder="Textul recenziei cursantului">${escH(t.text||'')}</textarea></div>
+  <div class="form-row">
+    <div class="form-group"><label>Numele cursantului</label><input type="text" id="tt-name" value="${escH(t.name||'')}" placeholder="ex: Ion M."></div>
+    <div class="form-group"><label>Categoria</label><select id="tt-cat">
+      ${ALL_CATS.map(c=>`<option ${t.cat===c?'selected':''}>${c}</option>`).join('')}
+    </select></div>
+  </div>
+  <div class="form-group"><label>Stele</label><select id="tt-stars">
+    ${[5,4,3].map(n=>`<option value="${n}" ${(t.stars||5)===n?'selected':''}>${'★'.repeat(n)} (${n})</option>`).join('')}
+  </select></div>`;
+}
+
+function newTestimonial() {
+  openModal(`
+  <div class="modal-head"><div class="modal-title">Recenzie nouă</div><button class="modal-close" onclick="closeModal()">×</button></div>
+  <div class="modal-body">${testiFormHTML()}</div>
+  <div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">Anulează</button><button class="btn-primary" onclick="saveTestimonial(-1)">Adaugă</button></div>`);
+}
+
+function editTestimonial(i) {
+  const t = DB.load().testimonials[i];
+  openModal(`
+  <div class="modal-head"><div class="modal-title">Editează recenzia</div><button class="modal-close" onclick="closeModal()">×</button></div>
+  <div class="modal-body">${testiFormHTML(t)}</div>
+  <div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">Anulează</button><button class="btn-primary" onclick="saveTestimonial(${i})">Salvează</button></div>`);
+}
+
+function saveTestimonial(idx) {
+  const text = document.getElementById('tt-text').value.trim();
+  if(!text){ toast('Completează textul recenziei.','danger'); return; }
+  const obj = {
+    id:    idx===-1 ? genId() : (DB.load().testimonials[idx]?.id||genId()),
+    text,
+    name:  document.getElementById('tt-name').value.trim(),
+    cat:   document.getElementById('tt-cat').value,
+    stars: parseInt(document.getElementById('tt-stars').value)||5
+  };
+  const d = DB.load();
+  if(idx===-1) d.testimonials.push(obj); else d.testimonials[idx] = obj;
+  DB.save(d); closeModal(); testimonials();
+  toast(idx===-1 ? 'Recenzie adăugată.' : 'Recenzie actualizată.');
+}
+
+function deleteTestimonial(i) {
+  if(!confirm('Ștergi această recenzie?')) return;
+  const d = DB.load(); d.testimonials.splice(i,1); DB.save(d); testimonials(); toast('Recenzie ștearsă.','danger');
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANNOUNCEMENT
+═══════════════════════════════════════════════════════ */
+function announcement() {
+  const d = DB.load();
+  const an = d.announcement || {};
+  document.getElementById('page-body').innerHTML = `
+  <div class="card">
+    <div class="card-title">Anunț pe site</div>
+    <p class="card-sub">Un mesaj afișat vizibil pe site-ul public (ex. informatii examen, vacanță, schimbări program).</p>
+    <div class="form-group">
+      <label>Text anunț</label>
+      <textarea id="an-text" rows="3" placeholder="ex: Examenul de teorie din luna august are loc pe data de 12.">${escH(an.text||'')}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tip vizual</label>
+        <select id="an-type">
+          <option value="amber"   ${an.type==='amber'  ?'selected':''}>Galben — Informare</option>
+          <option value="info"    ${an.type==='info'   ?'selected':''}>Albastru — Noutate</option>
+          <option value="success" ${an.type==='success'?'selected':''}>Verde — Veste bună</option>
+          <option value="danger"  ${an.type==='danger' ?'selected':''}>Roșu — Important</option>
+        </select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-end">
+        <label class="toggle-wrap" style="gap:12px;margin-bottom:6px">
+          <label class="toggle">
+            <input type="checkbox" id="an-active" ${an.active?'checked':''}>
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+          <span style="font-size:15px;font-weight:500">Afișat pe site</span>
+        </label>
+      </div>
+    </div>
+    <div class="anmt-preview" id="an-preview" style="margin-bottom:20px">${escH(an.text||'Previzualizare anunț...')}</div>
+    <button class="btn-primary" onclick="saveAnnouncement()">Salvează anunțul</button>
+  </div>`;
+
+  document.getElementById('an-text').addEventListener('input', function() {
+    document.getElementById('an-preview').textContent = this.value || 'Previzualizare anunț...';
+  });
+  document.getElementById('an-type').addEventListener('change', function() {
+    const p = document.getElementById('an-preview');
+    p.className = 'anmt-preview ' + this.value;
+  });
+}
+
+function saveAnnouncement() {
+  const d = DB.load();
+  d.announcement = {
+    active: document.getElementById('an-active').checked,
+    text:   document.getElementById('an-text').value.trim(),
+    type:   document.getElementById('an-type').value
+  };
+  DB.save(d); toast('Anunț salvat.');
+}
+
+/* ═══════════════════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════════════════ */
+function settings() {
+  const d = DB.load();
+  const sc = d.schedule || {};
+  document.getElementById('page-body').innerHTML = `
+  <div class="grid-2" style="align-items:start">
+    <div>
+      <div class="card">
+        <div class="form-section-title">Date de contact</div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="st-phone" value="${escH(d.phone||'')}"></div>
+        <div class="form-group"><label>Adresă</label><input type="text" id="st-addr" value="${escH(d.address||'')}"></div>
+        <button class="btn-primary" onclick="saveContact()">Salvează contactul</button>
+      </div>
+      <div class="card">
+        <div class="form-section-title">Program de lucru</div>
+        ${Object.entries(sc).map(([day,v])=>`
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <span style="min-width:110px;font-weight:600;font-size:14px">${day}</span>
+          <label class="toggle" title="Deschis / Închis">
+            <input type="checkbox" class="sched-open" data-day="${escH(day)}" ${!v.closed?'checked':''}>
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+          <input type="time" class="sched-from" data-day="${escH(day)}" value="${v.open||''}" style="width:90px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px" ${v.closed?'disabled':''}>
+          <span style="color:var(--tx3)">–</span>
+          <input type="time" class="sched-to" data-day="${escH(day)}" value="${v.close||''}" style="width:90px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px" ${v.closed?'disabled':''}>
+        </div>`).join('')}
+        <button class="btn-primary" onclick="saveSchedule()">Salvează programul</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="form-section-title">Statistici afișate pe site</div>
+        <div class="form-group"><label>Rată de promovare (%)</label><input type="number" id="st-promo" value="${d.stats?.promotionRate||92}" min="0" max="100"></div>
+        <div class="form-group"><label>Ani de experiență</label><input type="number" id="st-years" value="${d.stats?.yearsExperience||12}" min="1"></div>
+        <button class="btn-primary" onclick="saveStats()">Salvează statisticile</button>
+      </div>
+      <div class="card">
+        <div class="form-section-title">Securitate</div>
+        <div class="form-group"><label>Parolă curentă</label><input type="password" id="pw-old" placeholder="Parola actuală"></div>
+        <div class="form-group"><label>Parolă nouă</label><input type="password" id="pw-new" placeholder="Parola nouă (min. 8 caractere)"></div>
+        <div class="form-group"><label>Confirmă parola nouă</label><input type="password" id="pw-new2" placeholder="Repetă parola nouă"></div>
+        <button class="btn-primary" onclick="changePassword()">Schimbă parola</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.querySelectorAll('.sched-open').forEach(cb=>{
+    cb.addEventListener('change', function(){
+      const day = this.dataset.day;
+      document.querySelector(`.sched-from[data-day="${day}"]`).disabled = !this.checked;
+      document.querySelector(`.sched-to[data-day="${day}"]`).disabled = !this.checked;
+    });
+  });
+}
+
+function saveContact() {
+  const d = DB.load();
+  d.phone   = document.getElementById('st-phone').value.trim();
+  d.address = document.getElementById('st-addr').value.trim();
+  DB.save(d); toast('Date de contact salvate.');
+}
+
+function saveSchedule() {
+  const d = DB.load();
+  if(!d.schedule) d.schedule = {};
+  document.querySelectorAll('.sched-open').forEach(cb=>{
+    const day = cb.dataset.day;
+    d.schedule[day] = {
+      open:  document.querySelector(`.sched-from[data-day="${day}"]`).value,
+      close: document.querySelector(`.sched-to[data-day="${day}"]`).value,
+      closed: !cb.checked
+    };
+  });
+  DB.save(d); toast('Program salvat.');
+}
+
+function saveStats() {
+  const d = DB.load();
+  d.stats = {
+    promotionRate:   parseInt(document.getElementById('st-promo').value)||92,
+    yearsExperience: parseInt(document.getElementById('st-years').value)||12
+  };
+  DB.save(d); toast('Statistici salvate.');
+}
+
+function changePassword() {
+  const old_ = document.getElementById('pw-old').value;
+  const n1   = document.getElementById('pw-new').value;
+  const n2   = document.getElementById('pw-new2').value;
+  if(old_ !== getPassword()){ toast('Parola curentă este incorectă.','danger'); return; }
+  if(n1.length < 8){ toast('Parola nouă trebuie să aibă cel puțin 8 caractere.','danger'); return; }
+  if(n1 !== n2){ toast('Parolele noi nu coincid.','danger'); return; }
+  localStorage.setItem('catalindrive_pw', n1);
+  toast('Parola a fost schimbată cu succes.');
+  document.getElementById('pw-old').value = document.getElementById('pw-new').value = document.getElementById('pw-new2').value = '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+if(localStorage.getItem(LS_AUTH) === '1') navigate('dashboard');
+</script>
+</body>
+</html>

@@ -9,6 +9,54 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cătălin Drive — Școală de Șoferi Adjud, Vrancea · Categorii A, B, C, CE, D, BE, Tractor</title>
+<meta name="description" content="Școală de șoferi autorizată în Adjud, județul Vrancea. Categorii A, B, BE, C, CE, D și tractor. Instructori cu experiență, mașini cu dublă comandă, 92% rată de promovare. Servim Adjud, Focșani, Mărășești, Panciu, Odobești și comunele din jur.">
+<meta name="keywords" content="scoala de soferi Adjud, permis auto Vrancea, curs auto Adjud, categoria B Adjud, permis C CE Vrancea, instructor auto Adjud, scoala soferi Focsani, permis tractor Vrancea, categorie A Adjud, categoria D Vrancea, permis BE Adjud, scoala de soferi Marasesti, permis auto Panciu, curs conducere auto Odobesti">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Cătălin Drive, Adjud, Vrancea">
+<meta name="geo.region" content="RO-VN">
+<meta name="geo.placename" content="Adjud, Vrancea">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cătălin Drive — Școală de Șoferi Adjud, Vrancea">
+<meta property="og:description" content="Toate categoriile auto într-un singur loc. Adjud, județul Vrancea. 92% rată de promovare, instructori experimentați, mașini noi cu dublă comandă.">
+<meta property="og:locale" content="ro_RO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cătălin Drive — Școală de Șoferi Adjud, Vrancea">
+<meta name="twitter:description" content="Toate categoriile auto într-un singur loc. Adjud, județul Vrancea.">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"DrivingSchool",
+  "name":"Cătălin Drive",
+  "description":"Școală de șoferi autorizată în Adjud, județul Vrancea. Predăm categoriile A, B, BE, C, CE, D și tractor. Instructori cu experiență, 92% rată de promovare.",
+  "telephone":"+40755457783",
+  "address":{
+    "@type":"PostalAddress",
+    "streetAddress":"Str. Ion Roată",
+    "addressLocality":"Adjud",
+    "postalCode":"625100",
+    "addressRegion":"Vrancea",
+    "addressCountry":"RO"
+  },
+  "geo":{"@type":"GeoCoordinates","latitude":"46.1015","longitude":"27.1743"},
+  "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"17:00"}],
+  "areaServed":["Adjud","Focșani","Mărășești","Panciu","Odobești","Gugești","Vidra","Dumbrăveni","Vrancea"],
+  "priceRange":"1.200 lei – 4.500 lei",
+  "hasOfferCatalog":{
+    "@type":"OfferCatalog","name":"Categorii de permis auto",
+    "itemListElement":[
+      {"@type":"Offer","name":"Categoria B – Autoturism","price":"2800","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Categoria A – Motocicletă","price":"1900","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Categoria C – Camion","price":"3900","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Categoria CE – Camion cu remorcă","price":"3200","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Categoria D – Autobuz","price":"4500","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Categoria BE – Autoturism cu remorcă","price":"1200","priceCurrency":"RON"},
+      {"@type":"Offer","name":"Tractor","price":"1500","priceCurrency":"RON"}
+    ]
+  },
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"5","reviewCount":"3","bestRating":"5"}
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
@@ -397,6 +445,12 @@ hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(
 .ftr-col-label{font-family:var(--ff-d);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(248,244,237,.35);margin-bottom:14px}
 .ftr-div{height:1px;background:rgba(248,244,237,.08);margin:clamp(24px,4vw,40px) 0 20px}
 .ftr-copy{font-size:13px;color:rgba(248,244,237,.3)}
+/* ── ANNOUNCEMENT ── */
+.site-anmt{padding:12px clamp(16px,4vw,28px);font-size:15px;font-weight:500;text-align:center}
+/* ── OFFER BANNER ── */
+.offer-banner{background:linear-gradient(135deg,rgba(242,180,24,.13),rgba(196,85,31,.07));border:1px solid rgba(242,180,24,.32);border-radius:var(--r-lg);padding:20px 24px}
+.offer-banner-name{font-family:var(--ff-d);font-weight:700;font-size:17px;margin-bottom:4px}
+.offer-banner-val{font-family:var(--ff-d);font-weight:800;font-size:20px;color:var(--orange)}
 </style>
 <script>
 (function(){
@@ -424,6 +478,11 @@ hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(
 </helmet>
 
 <div style="min-height:100vh">
+
+<!-- ══ ANNOUNCEMENT BANNER (managed from Admin → Anunțuri) ══ -->
+<sc-if value="{{ hasAnnouncement }}" hint-placeholder-val="{{ false }}">
+<div class="site-anmt" style="{{ announcementStyle }}">{{ announcementText }}</div>
+</sc-if>
 
 <!-- ═══════════════════════════════════════ HEADER ══ -->
 <header class="site-hdr">
@@ -508,9 +567,9 @@ hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(
             </a>
           </div>
           <div class="hero-stats">
-            <div><div class="hero-stat-n">92%</div><div class="hero-stat-l">Rată de promovare</div></div>
+            <div><div class="hero-stat-n">{{ promotionRate }}</div><div class="hero-stat-l">Rată de promovare</div></div>
             <div><div class="hero-stat-n">7</div><div class="hero-stat-l">Categorii disponibile</div></div>
-            <div><div class="hero-stat-n">12+</div><div class="hero-stat-l">Ani de experiență</div></div>
+            <div><div class="hero-stat-n">{{ yearsExp }}</div><div class="hero-stat-l">Ani de experiență</div></div>
           </div>
         </div>
 
@@ -695,6 +754,24 @@ hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(
     </div>
   </div>
 
+  <sc-if value="{{ hasActiveOffers }}" hint-placeholder-val="{{ false }}">
+  <div class="ct" style="padding-bottom:0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px">
+      <sc-for list="{{ activeOffers }}" as="o" hint-placeholder-count="0">
+        <div class="offer-banner rv">
+          <div class="offer-banner-name">{{ o.name }}</div>
+          <div style="font-size:14px;color:var(--tx2);margin-bottom:10px">{{ o.tagline }}</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:baseline">
+            <span class="offer-banner-val">{{ o.discount }}</span>
+            <span style="font-size:13px;color:var(--tx3)">Categorii: {{ o.cats }}</span>
+            <span style="font-size:13px;color:var(--tx3)">{{ o.dateRange }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
   <div class="ct rv" style="padding-bottom:28px">
     <div class="prices-wrap">
       <table class="prices-tbl">
@@ -779,9 +856,9 @@ hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(
         <div class="contact-card">
           <h3 class="contact-h3">Program</h3>
           <div class="sched-grid">
-            <span class="sched-lbl">Luni – Vineri</span><span>09:00 – 17:00</span>
-            <span class="sched-lbl">Sâmbătă</span><span>Închis</span>
-            <span class="sched-lbl">Duminică</span><span>Închis</span>
+            <sc-for list="{{ scheduleRows }}" as="sr" hint-placeholder-count="3">
+              <span class="sched-lbl">{{ sr.day }}</span><span>{{ sr.time }}</span>
+            </sc-for>
           </div>
         </div>
         <div class="contact-card" style="background:var(--card-lt)">
@@ -849,22 +926,109 @@ class Component extends DCLogic {
     this.onMql = e => this.setState({ isMobile: e.matches, menuOpen: false });
     this.setState({ isMobile: this.mql.matches });
     this.mql.addEventListener("change", this.onMql);
+    // Re-render instantly when admin saves changes from another tab
+    this.onStorage = e => { if (e.key === 'catalindrive_data') this.setState({}); };
+    window.addEventListener('storage', this.onStorage);
   }
-
   componentWillUnmount() {
     if (this.mql) this.mql.removeEventListener("change", this.onMql);
+    window.removeEventListener('storage', this.onStorage);
   }
-
   go(page) {
     this.setState({ page, menuOpen: false });
     if (typeof window !== "undefined") window.scrollTo(0, 0);
   }
 
+  _defaults() {
+    return {
+      phone:   "0755 457 783",
+      address: "Str. Ion Roată, 625100 Adjud, județul Vrancea",
+      schedule: {
+        "Luni–Vineri": { open:"09:00", close:"17:00", closed:false },
+        "Sâmbătă":     { open:"",     close:"",      closed:true  },
+        "Duminică":    { open:"",     close:"",      closed:true  }
+      },
+      prices: [
+        {code:"B",  name:"Autoturism",           hours:30, extra:70,  price:2800},
+        {code:"A",  name:"Motocicletă",           hours:20, extra:60,  price:1900},
+        {code:"C",  name:"Camion",                hours:20, extra:120, price:3900},
+        {code:"CE", name:"Camion cu remorcă",     hours:15, extra:140, price:3200},
+        {code:"D",  name:"Autobuz",               hours:20, extra:150, price:4500},
+        {code:"BE", name:"Autoturism cu remorcă", hours:15, extra:70,  price:1200},
+        {code:"Tr", name:"Tractor",               hours:20, extra:70,  price:1500}
+      ],
+      instructors: [
+        {id:1, name:"Cătălin Rusu",    role:"Instructor și administrator, 12 ani de experiență.",    cats:"B · BE · C · CE"},
+        {id:2, name:"Andrei Popa",     role:"Instructor practică, specializat pe categoriile grele.", cats:"C · CE · D"},
+        {id:3, name:"Mihaela Ionescu", role:"Instructor practică și curs de legislație.",             cats:"A · B · Tractor"}
+      ],
+      offers: [],
+      testimonials: [
+        {id:1, text:"Am luat permisul din prima. Mi-au explicat de fiecare dată calm, fără să mă grăbească, iar ultimele ore le-am făcut exact pe traseul de examen.", name:"Ioana M.", cat:"B"},
+        {id:2, text:"Aveam nevoie de C și CE pentru firmă. Program făcut după turele mele și dosar rezolvat în două săptămâni.", name:"Vasile T.", cat:"CE"},
+        {id:3, text:"Cel mai bun raport preț-calitate din zonă. Mașini curate, instructori serioși, fără costuri surpriză la final.", name:"Robert D.", cat:"B"}
+      ],
+      announcement: {active:false, text:"", type:"amber"},
+      stats: {promotionRate:92, yearsExperience:12}
+    };
+  }
+
+  _siteData() {
+    const def = this._defaults();
+    try {
+      const raw = localStorage.getItem('catalindrive_data');
+      if (!raw) return def;
+      const s = JSON.parse(raw);
+      return {
+        ...def, ...s,
+        prices:       (s.prices      && s.prices.length)       ? s.prices       : def.prices,
+        instructors:  (s.instructors && s.instructors.length)  ? s.instructors  : def.instructors,
+        testimonials: (s.testimonials&& s.testimonials.length) ? s.testimonials : def.testimonials,
+        schedule:     s.schedule     || def.schedule,
+        announcement: s.announcement || def.announcement,
+        stats:        s.stats        || def.stats
+      };
+    } catch { return def; }
+  }
+
+  _isOfferActive(o) {
+    if (!o.active) return false;
+    const now = new Date(); now.setHours(0,0,0,0);
+    if (o.startDate && new Date(o.startDate) > now) return false;
+    if (o.endDate   && new Date(o.endDate)   < now) return false;
+    return true;
+  }
+
+  _fmtN(n) {
+    return Number(n).toLocaleString('ro-RO') + ' lei';
+  }
+
+  _annStyle(type) {
+    return ({
+      amber:   'background:rgba(242,180,24,.13);border-top:3px solid #f2b418;color:#5a3c05',
+      info:    'background:rgba(59,130,246,.1);border-top:3px solid #3b82f6;color:#1e3a8a',
+      success: 'background:rgba(56,161,105,.1);border-top:3px solid #38a169;color:#14532d',
+      danger:  'background:rgba(229,62,62,.1);border-top:3px solid #e53e3e;color:#7f1d1d'
+    })[type] || 'background:rgba(242,180,24,.13);border-top:3px solid #f2b418;color:#5a3c05';
+  }
+
   renderVals() {
-    const phone = this.props.phone ?? "0755 457 783";
-    const address = this.props.address ?? "Str. Ion Roată, 625100 Adjud, județul Vrancea";
-    const digits = phone.replace(/[^0-9+]/g, "");
-    const page = this.state.page;
+    const sd      = this._siteData();
+    const phone   = sd.phone;
+    const address = sd.address;
+    const digits  = phone.replace(/[^0-9+]/g, "");
+    const page    = this.state.page;
+
+    const activeOffers = (sd.offers || []).filter(o => this._isOfferActive(o));
+    const ann = sd.announcement || {};
+
+    const scheduleRows = Object.entries(sd.schedule || {}).map(([day, v]) => ({
+      day,
+      time: v.closed ? 'Închis' : ((v.open || '') + ' – ' + (v.close || ''))
+    }));
+
+    const prRate = sd.stats?.promotionRate   || 92;
+    const yrExp  = sd.stats?.yearsExperience || 12;
 
     const faqData = [
       { q: "Cât durează școala de la înscriere la examen?", a: "Pentru categoria B, în medie șase până la opt săptămâni: cursul de legislație se face în paralel cu orele de practică, iar programarea la examen depinde de datele disponibile la poliția rutieră." },
@@ -875,27 +1039,46 @@ class Component extends DCLogic {
     ];
 
     return {
-      isMobile: this.state.isMobile,
+      isMobile:  this.state.isMobile,
       isDesktop: !this.state.isMobile,
-      menuOpen: this.state.menuOpen,
-      menuClosed: !this.state.menuOpen,
+      menuOpen:  this.state.menuOpen,
+      menuClosed:!this.state.menuOpen,
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
-      phone,
-      address,
-      telHref: "tel:" + digits,
-      waHref: "https://wa.me/4" + digits.replace(/^\+?4?0?/, "0"),
+      phone, address,
+      telHref:  "tel:" + digits,
+      waHref:   "https://wa.me/4" + digits.replace(/^\+?4?0?/, "0"),
       mapsHref: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address),
-      atHome: page === "acasa",
+      atHome:      page === "acasa",
       atCategorii: page === "categorii",
-      atPreturi: page === "preturi",
-      atContact: page === "contact",
-      goHome: () => this.go("acasa"),
+      atPreturi:   page === "preturi",
+      atContact:   page === "contact",
+      goHome:      () => this.go("acasa"),
       goCategorii: () => this.go("categorii"),
-      goPreturi: () => this.go("preturi"),
-      goContact: () => this.go("contact"),
+      goPreturi:   () => this.go("preturi"),
+      goContact:   () => this.go("contact"),
+
+      promotionRate: prRate + '%',
+      yearsExp:      yrExp  + '+',
+
+      hasAnnouncement:  !!(ann.active && ann.text),
+      announcementText: ann.text || '',
+      announcementStyle: this._annStyle(ann.type),
+
+      hasActiveOffers: activeOffers.length > 0,
+      activeOffers: activeOffers.map(o => {
+        const label = o.discountType === 'percent' ? `-${o.discountValue}%` : `-${o.discountValue} lei`;
+        let dateRange = '';
+        if (o.endDate) {
+          const [y,m,d] = o.endDate.split('-');
+          dateRange = '· până pe ' + d + '.' + m + '.' + y;
+        }
+        return { name: o.name, tagline: o.tagline || '', discount: label, cats: (o.categories||[]).join(', '), dateRange };
+      }),
+
+      scheduleRows,
 
       trust: [
-        { n: "01", title: "Rată mare de promovare", body: "92% dintre cursanții noștri iau examenul din prima încercare." },
+        { n: "01", title: "Rată mare de promovare", body: prRate + "% dintre cursanții noștri iau examenul din prima încercare." },
         { n: "02", title: "Mașini noi, dublă comandă", body: "Flotă recentă, verificată, cu dublă comandă la toate categoriile." },
         { n: "03", title: "Instructori răbdători", body: "Instructori cu peste zece ani de experiență, care explică până înțelegi." },
         { n: "04", title: "Program flexibil", body: "Orele de practică se stabilesc împreună, între 07:00 și 21:00." },
@@ -911,41 +1094,39 @@ class Component extends DCLogic {
         { n: "5", title: "Examenul", body: "Te programăm, te însoțim și mergi la examen cu mașina pe care ai învățat." }
       ],
 
-      instructors: [
-        { slot: "cd-instr-1", name: "Cătălin Rusu", role: "Instructor și administrator, 12 ani de experiență.", cats: "B · BE · C · CE" },
-        { slot: "cd-instr-2", name: "Andrei Popa", role: "Instructor practică, specializat pe categoriile grele.", cats: "C · CE · D" },
-        { slot: "cd-instr-3", name: "Mihaela Ionescu", role: "Instructor practică și curs de legislație.", cats: "A · B · Tractor" }
-      ],
+      instructors: sd.instructors.map((ins, i) => ({
+        slot: "cd-instr-" + (ins.id || i+1),
+        name: ins.name,
+        role: ins.role,
+        cats: ins.cats
+      })),
 
-      testimonials: [
-        { text: "Am luat permisul din prima. Mi-au explicat de fiecare dată calm, fără să mă grăbească, iar ultimele ore le-am făcut exact pe traseul de examen.", name: "Ioana M.", cat: "B" },
-        { text: "Aveam nevoie de C și CE pentru firmă. Program făcut după turele mele și dosar rezolvat în două săptămâni.", name: "Vasile T.", cat: "CE" },
-        { text: "Cel mai bun raport preț-calitate din zonă. Mașini curate, instructori serioși, fără costuri surpriză la final.", name: "Robert D.", cat: "B" }
-      ],
+      testimonials: sd.testimonials.map(t => ({
+        text: t.text,
+        name: t.name,
+        cat:  t.cat
+      })),
 
       categories: [
-        { code: "B", name: "Autoturism", vehicle: "Până la 3.500 kg", body: "Cea mai cerută categorie. Curs de legislație, poligon și traseele de examinare din Focșani.", age: "18 ani", hours: "30" },
-        { code: "A", name: "Motocicletă", vehicle: "A, A1, A2 și AM", body: "Toate subcategoriile de moto și moped, cu poligon amenajat pentru probele de îndemânare.", age: "16 ani", hours: "20" },
-        { code: "C", name: "Camion", vehicle: "Peste 3.500 kg", body: "Pentru cei care vor să lucreze în transporturi. Se poate combina cu atestatul profesional.", age: "21 ani", hours: "20" },
-        { code: "CE", name: "Camion cu remorcă", vehicle: "Ansamblu cu semiremorcă", body: "Practică pe ansamblu real, cu accent pe manevre de mers cu spatele și parcare la rampă.", age: "21 ani", hours: "15" },
-        { code: "D", name: "Autobuz", vehicle: "Transport persoane", body: "Categoria D pentru autobuz și microbuz, cu instructor specializat pe transport de persoane.", age: "24 ani", hours: "20" },
-        { code: "BE", name: "Autoturism cu remorcă", vehicle: "Remorcă peste 750 kg", body: "Se obține repede dacă ai deja categoria B. Manevre cu remorca în poligon și pe traseu.", age: "18 ani", hours: "15" },
-        { code: "Tr", name: "Tractor", vehicle: "Tractor și utilaje agricole", body: "Pentru lucrul în agricultură. Curs adaptat utilajelor pe care le folosești.", age: "18 ani", hours: "20" }
+        { code:"B",  name:"Autoturism",           vehicle:"Până la 3.500 kg",      body:"Cea mai cerută categorie. Curs de legislație, poligon și traseele de examinare din Focșani.", age:"18 ani", hours:"30" },
+        { code:"A",  name:"Motocicletă",           vehicle:"A, A1, A2 și AM",       body:"Toate subcategoriile de moto și moped, cu poligon amenajat pentru probele de îndemânare.",   age:"16 ani", hours:"20" },
+        { code:"C",  name:"Camion",                vehicle:"Peste 3.500 kg",         body:"Pentru cei care vor să lucreze în transporturi. Se poate combina cu atestatul profesional.", age:"21 ani", hours:"20" },
+        { code:"CE", name:"Camion cu remorcă",     vehicle:"Ansamblu cu semiremorcă",body:"Practică pe ansamblu real, cu accent pe manevre de mers cu spatele și parcare la rampă.",   age:"21 ani", hours:"15" },
+        { code:"D",  name:"Autobuz",               vehicle:"Transport persoane",     body:"Categoria D pentru autobuz și microbuz, cu instructor specializat pe transport de persoane.",age:"24 ani", hours:"20" },
+        { code:"BE", name:"Autoturism cu remorcă", vehicle:"Remorcă peste 750 kg",   body:"Se obține repede dacă ai deja categoria B. Manevre cu remorca în poligon și pe traseu.",    age:"18 ani", hours:"15" },
+        { code:"Tr", name:"Tractor",               vehicle:"Tractor și utilaje agricole", body:"Pentru lucrul în agricultură. Curs adaptat utilajelor pe care le folosești.",           age:"18 ani", hours:"20" }
       ],
 
-      prices: [
-        { code: "B", name: "Autoturism", hours: "30 ore", extra: "70 lei", price: "2.800 lei" },
-        { code: "A", name: "Motocicletă", hours: "20 ore", extra: "60 lei", price: "1.900 lei" },
-        { code: "C", name: "Camion", hours: "20 ore", extra: "120 lei", price: "3.900 lei" },
-        { code: "CE", name: "Camion cu remorcă", hours: "15 ore", extra: "140 lei", price: "3.200 lei" },
-        { code: "D", name: "Autobuz", hours: "20 ore", extra: "150 lei", price: "4.500 lei" },
-        { code: "BE", name: "Autoturism cu remorcă", hours: "15 ore", extra: "70 lei", price: "1.200 lei" },
-        { code: "Tr", name: "Tractor", hours: "20 ore", extra: "70 lei", price: "1.500 lei" }
-      ],
+      prices: sd.prices.map(p => ({
+        code:  p.code,
+        name:  p.name,
+        hours: p.hours + ' ore',
+        extra: p.extra + ' lei',
+        price: this._fmtN(p.price)
+      })),
 
       faq: faqData.map((f, i) => ({
-        q: f.q,
-        a: f.a,
+        q: f.q, a: f.a,
         open: this.state.openFaq === i,
         sign: this.state.openFaq === i ? "–" : "+",
         toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i }))
