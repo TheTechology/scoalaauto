@@ -1,0 +1,31 @@
+{
+  "phone": "0755 457 783",
+  "address": "Str. Ion Roată, 625100 Adjud, județul Vrancea",
+  "schedule": {
+    "Luni–Vineri": {"open":"09:00","close":"17:00","closed":false},
+    "Sâmbătă":     {"open":"",    "close":"",     "closed":true},
+    "Duminică":    {"open":"",    "close":"",     "closed":true}
+  },
+  "prices": [
+    {"code":"B",  "name":"Autoturism",           "hours":30, "extra":70,  "price":2800},
+    {"code":"A",  "name":"Motocicletă",           "hours":20, "extra":60,  "price":1900},
+    {"code":"C",  "name":"Camion",                "hours":20, "extra":120, "price":3900},
+    {"code":"CE", "name":"Camion cu remorcă",     "hours":15, "extra":140, "price":3200},
+    {"code":"D",  "name":"Autobuz",               "hours":20, "extra":150, "price":4500},
+    {"code":"BE", "name":"Autoturism cu remorcă", "hours":15, "extra":70,  "price":1200},
+    {"code":"Tr", "name":"Tractor",               "hours":20, "extra":70,  "price":1500}
+  ],
+  "instructors": [
+    {"id":1, "name":"Cătălin Rusu",    "role":"Instructor și administrator, 12 ani de experiență.",    "cats":"B · BE · C · CE"},
+    {"id":2, "name":"Andrei Popa",     "role":"Instructor practică, specializat pe categoriile grele.", "cats":"C · CE · D"},
+    {"id":3, "name":"Mihaela Ionescu", "role":"Instructor practică și curs de legislație.",             "cats":"A · B · Tractor"}
+  ],
+  "offers": [],
+  "testimonials": [
+    {"id":1, "text":"Am luat permisul din prima. Mi-au explicat de fiecare dată calm, fără să mă grăbească, iar ultimele ore le-am făcut exact pe traseul de examen.", "name":"Ioana M.", "cat":"B", "stars":5},
+    {"id":2, "text":"Aveam nevoie de C și CE pentru firmă. Program făcut după turele mele și dosar rezolvat în două săptămâni.", "name":"Vasile T.", "cat":"CE", "stars":5},
+    {"id":3, "text":"Cel mai bun raport preț-calitate din zonă. Mașini curate, instructori serioși, fără costuri surpriză la final.", "name":"Robert D.", "cat":"B", "stars":5}
+  ],
+  "announcement": {"active":false, "text":"", "type":"amber"},
+  "stats": {"promotionRate":92, "yearsExperience":12}
+}

@@ -285,6 +285,26 @@ tbody tr:hover{background:#fafafa}
 .text-danger{color:var(--danger)}
 .text-success{color:var(--success)}
 .text-muted{color:var(--tx3)}
+
+/* ── PUBLISH BUTTON ── */
+.pub-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 20px;background:var(--amber);color:var(--dark);
+  font-family:var(--ff);font-weight:700;font-size:13px;
+  border:none;border-radius:999px;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 16px rgba(242,180,24,.32);
+  white-space:nowrap;flex-shrink:0;
+}
+.pub-btn:hover{background:var(--amber-dk);transform:translateY(-1px)}
+.pub-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.pub-btn.pending{animation:pubPulse 1.4s ease-in-out infinite}
+.pub-btn.ok{background:var(--success);color:#fff}
+.pub-btn.err{background:var(--danger);color:#fff}
+@keyframes pubPulse{
+  0%,100%{box-shadow:0 4px 16px rgba(242,180,24,.32)}
+  50%    {box-shadow:0 4px 28px rgba(242,180,24,.72)}
+}
+#pub-status{font-size:11px;color:var(--tx3);text-align:right;max-width:180px;line-height:1.3}
 </style>
 </head>
 <body>
@@ -365,7 +385,16 @@ tbody tr:hover{background:#fafafa}
           <div class="page-head-title" id="page-title">Dashboard</div>
           <div class="page-head-sub" id="page-sub">Bun venit în panoul de administrare</div>
         </div>
-        <div id="page-action"></div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div id="page-action"></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+            <button id="pub-btn" class="pub-btn" onclick="publishToGitHub()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 15v3H6v-3"/><path d="M12 3v12"/><path d="M8 8l4-4 4 4"/></svg>
+              Publică pe site
+            </button>
+            <div id="pub-status">Se verifică...</div>
+          </div>
+        </div>
       </div>
       <div class="page-body" id="page-body"></div>
     </div>
@@ -428,6 +457,8 @@ const DB = {
   },
   save(data) {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
+    localStorage.setItem('catalindrive_pending', '1');
+    updatePubBtn();
   }
 };
 
@@ -1160,6 +1191,19 @@ function settings() {
         <div class="form-group"><label>Confirmă parola nouă</label><input type="password" id="pw-new2" placeholder="Repetă parola nouă"></div>
         <button class="btn-primary" onclick="changePassword()">Schimbă parola</button>
       </div>
+      <div class="card">
+        <div class="form-section-title">Publicare GitHub</div>
+        <p style="font-size:13px;color:var(--tx3);margin:0 0 16px;line-height:1.65">
+          Token personal GitHub (PAT) cu permisiune <b>Contents: Read &amp; write</b> pe repo-ul <b>TheTechology/scoalaauto</b>.
+          Se stochează local în browser — nu se include în repo.
+        </p>
+        <div class="form-group">
+          <label>Personal Access Token</label>
+          <input type="password" id="gh-token" value="${localStorage.getItem('catalindrive_gh_token')||''}" placeholder="ghp_... sau github_pat_...">
+          <div class="form-hint">GitHub → Settings → Developer settings → Personal access tokens (Fine-grained) → scoalaauto → Contents: Read &amp; write</div>
+        </div>
+        <button class="btn-primary" onclick="saveGHToken()">Salvează token-ul</button>
+      </div>
     </div>
   </div>`;
 
@@ -1215,9 +1259,124 @@ function changePassword() {
 }
 
 /* ═══════════════════════════════════════════════════════
+   GITHUB PUBLISH
+═══════════════════════════════════════════════════════ */
+const GH_REPO = 'TheTechology/scoalaauto';
+const GH_FILE = 'data.json';
+
+function updatePubBtn() {
+  const btn = document.getElementById('pub-btn');
+  const st  = document.getElementById('pub-status');
+  if (!btn || !st) return;
+  const pending = localStorage.getItem('catalindrive_pending') === '1';
+  const token   = localStorage.getItem('catalindrive_gh_token');
+  if (pending) {
+    btn.className = 'pub-btn pending';
+    if (!token) {
+      st.textContent  = 'Token GitHub lipsă';
+      st.style.color  = 'var(--danger)';
+    } else {
+      st.textContent = 'Modificări nesincronizate';
+      st.style.color = '#c4551f';
+    }
+  } else {
+    btn.className = 'pub-btn';
+    st.textContent = 'Site sincronizat ✓';
+    st.style.color = 'var(--success)';
+  }
+}
+
+const PUB_ICON = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 15v3H6v-3"/><path d="M12 3v12"/><path d="M8 8l4-4 4 4"/></svg> Publică pe site';
+
+async function publishToGitHub() {
+  const token = localStorage.getItem('catalindrive_gh_token');
+  if (!token) {
+    toast('Configurează token-ul GitHub în Setări → Publicare GitHub.', 'danger');
+    navigate('settings');
+    return;
+  }
+  const btn = document.getElementById('pub-btn');
+  const st  = document.getElementById('pub-status');
+  btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Se publică...';
+  btn.disabled  = true;
+  btn.className = 'pub-btn';
+  st.textContent = 'Conectare la GitHub...';
+  st.style.color = 'var(--tx3)';
+
+  const data = DB.load();
+  let encoded;
+  try {
+    encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  } catch(e) {
+    encoded = btoa(JSON.stringify(data, null, 2));
+  }
+
+  const hdrs = {
+    'Authorization':  'token ' + token,
+    'Accept':         'application/vnd.github.v3+json',
+    'Content-Type':   'application/json'
+  };
+
+  try {
+    let sha;
+    const r0 = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
+      { headers: hdrs }
+    );
+    if (r0.ok) { sha = (await r0.json()).sha; }
+
+    const body = {
+      message: 'Admin: actualizare conținut · ' + new Date().toLocaleString('ro-RO'),
+      content: encoded,
+      branch: 'main'
+    };
+    if (sha) body.sha = sha;
+
+    const r1 = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
+      { method: 'PUT', headers: hdrs, body: JSON.stringify(body) }
+    );
+
+    if (r1.ok) {
+      localStorage.removeItem('catalindrive_pending');
+      btn.innerHTML  = '✓ Publicat!';
+      btn.className  = 'pub-btn ok';
+      btn.disabled   = false;
+      st.textContent = 'Site-ul se actualizează în ~1 min';
+      st.style.color = 'var(--success)';
+      toast('Publicat pe GitHub! Site-ul se va actualiza în 1–2 minute.', 'success');
+      setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 5000);
+    } else {
+      const err = await r1.json().catch(() => ({}));
+      throw new Error(err.message || 'HTTP ' + r1.status);
+    }
+  } catch(e) {
+    btn.innerHTML  = '✕ Eroare';
+    btn.className  = 'pub-btn err';
+    btn.disabled   = false;
+    st.textContent = e.message;
+    st.style.color = 'var(--danger)';
+    toast('Eroare la publicare: ' + e.message, 'danger');
+    setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 5000);
+  }
+}
+
+function saveGHToken() {
+  const t = (document.getElementById('gh-token').value || '').trim();
+  if (t) {
+    localStorage.setItem('catalindrive_gh_token', t);
+    toast('Token GitHub salvat.', 'success');
+  } else {
+    localStorage.removeItem('catalindrive_gh_token');
+    toast('Token șters.', 'info');
+  }
+  updatePubBtn();
+}
+
+/* ═══════════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════════ */
-if(localStorage.getItem(LS_AUTH) === '1') navigate('dashboard');
+if(localStorage.getItem(LS_AUTH) === '1') { navigate('dashboard'); updatePubBtn(); }
 </script>
 </body>
 </html>
