@@ -388,7 +388,7 @@ tbody tr:hover{background:#fafafa}
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <div id="page-action"></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-            <button id="pub-btn" class="pub-btn" onclick="publishToGitHub()">
+            <button id="pub-btn" class="pub-btn" onclick="publishSite()">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 15v3H6v-3"/><path d="M12 3v12"/><path d="M8 8l4-4 4 4"/></svg>
               Publică pe site
             </button>
@@ -1198,11 +1198,22 @@ function settings() {
           Se stochează local în browser — nu se include în repo.
         </p>
         <div class="form-group">
-          <label>Personal Access Token</label>
+          <label>Personal Access Token GitHub</label>
           <input type="password" id="gh-token" value="${localStorage.getItem('catalindrive_gh_token')||''}" placeholder="ghp_... sau github_pat_...">
           <div class="form-hint">GitHub → Settings → Developer settings → Personal access tokens (Fine-grained) → scoalaauto → Contents: Read &amp; write</div>
         </div>
-        <button class="btn-primary" onclick="saveGHToken()">Salvează token-ul</button>
+        <button class="btn-primary" onclick="saveGHToken()" style="margin-bottom:20px">Salvează token-ul</button>
+        <hr style="border:0;border-top:1px solid var(--border);margin:4px 0 20px">
+        <div class="form-section-title" style="font-size:14px;color:var(--tx2)">Netlify Deploy Hook <span style="font-weight:400;color:var(--tx3)">(recomandat pentru catalindrive.netlify.app)</span></div>
+        <p style="font-size:13px;color:var(--tx3);margin:0 0 12px;line-height:1.6">
+          URL-ul hook-ului Netlify declanșează un redeploy automat după fiecare publicare. <b>Netlify → Site → Site configuration → Build &amp; deploy → Build hooks → Add build hook</b> → copiază URL-ul.
+        </p>
+        <div class="form-group">
+          <label>Netlify Build Hook URL</label>
+          <input type="url" id="netlify-hook" value="${localStorage.getItem('catalindrive_netlify_hook')||''}" placeholder="https://api.netlify.com/build_hooks/...">
+          <div class="form-hint">Site: catalindrive.netlify.app · Branch: main</div>
+        </div>
+        <button class="btn-primary" onclick="saveNetlifyHook()">Salvează hook-ul Netlify</button>
       </div>
     </div>
   </div>`;
@@ -1259,22 +1270,26 @@ function changePassword() {
 }
 
 /* ═══════════════════════════════════════════════════════
-   GITHUB PUBLISH
+   PUBLISH — GitHub + Netlify deploy hook
 ═══════════════════════════════════════════════════════ */
 const GH_REPO = 'TheTechology/scoalaauto';
 const GH_FILE = 'data.json';
+
+function _hasPublishMethod() {
+  return !!(localStorage.getItem('catalindrive_gh_token') ||
+            localStorage.getItem('catalindrive_netlify_hook'));
+}
 
 function updatePubBtn() {
   const btn = document.getElementById('pub-btn');
   const st  = document.getElementById('pub-status');
   if (!btn || !st) return;
   const pending = localStorage.getItem('catalindrive_pending') === '1';
-  const token   = localStorage.getItem('catalindrive_gh_token');
   if (pending) {
     btn.className = 'pub-btn pending';
-    if (!token) {
-      st.textContent  = 'Token GitHub lipsă';
-      st.style.color  = 'var(--danger)';
+    if (!_hasPublishMethod()) {
+      st.textContent = 'Configurează publicarea în Setări';
+      st.style.color = 'var(--danger)';
     } else {
       st.textContent = 'Modificări nesincronizate';
       st.style.color = '#c4551f';
@@ -1288,88 +1303,100 @@ function updatePubBtn() {
 
 const PUB_ICON = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 15v3H6v-3"/><path d="M12 3v12"/><path d="M8 8l4-4 4 4"/></svg> Publică pe site';
 
-async function publishToGitHub() {
-  const token = localStorage.getItem('catalindrive_gh_token');
-  if (!token) {
-    toast('Configurează token-ul GitHub în Setări → Publicare GitHub.', 'danger');
+async function publishSite() {
+  const ghToken   = localStorage.getItem('catalindrive_gh_token');
+  const netlifyHk = localStorage.getItem('catalindrive_netlify_hook');
+
+  if (!ghToken && !netlifyHk) {
+    toast('Configurează cel puțin o metodă de publicare în Setări.', 'danger');
     navigate('settings');
     return;
   }
+
   const btn = document.getElementById('pub-btn');
   const st  = document.getElementById('pub-status');
   btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Se publică...';
   btn.disabled  = true;
   btn.className = 'pub-btn';
-  st.textContent = 'Conectare la GitHub...';
-  st.style.color = 'var(--tx3)';
 
-  const data = DB.load();
-  let encoded;
-  try {
-    encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  } catch(e) {
-    encoded = btoa(JSON.stringify(data, null, 2));
+  const results = [];
+
+  /* ── 1. GitHub: actualizează data.json ── */
+  if (ghToken) {
+    st.textContent = 'Scriere data.json pe GitHub...';
+    st.style.color = 'var(--tx3)';
+    try {
+      const data = DB.load();
+      let encoded;
+      try { encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))); }
+      catch(e) { encoded = btoa(JSON.stringify(data, null, 2)); }
+
+      const hdrs = {
+        'Authorization': 'token ' + ghToken,
+        'Accept':        'application/vnd.github.v3+json',
+        'Content-Type':  'application/json'
+      };
+      let sha;
+      const r0 = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE, { headers: hdrs });
+      if (r0.ok) { sha = (await r0.json()).sha; }
+
+      const body = { message: 'Admin: actualizare · ' + new Date().toLocaleString('ro-RO'), content: encoded, branch: 'main' };
+      if (sha) body.sha = sha;
+
+      const r1 = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
+        { method: 'PUT', headers: hdrs, body: JSON.stringify(body) });
+
+      if (r1.ok) { results.push('GitHub ✓'); }
+      else {
+        const e = await r1.json().catch(() => ({}));
+        results.push('GitHub ✕ ' + (e.message || r1.status));
+      }
+    } catch(e) { results.push('GitHub ✕ ' + e.message); }
   }
 
-  const hdrs = {
-    'Authorization':  'token ' + token,
-    'Accept':         'application/vnd.github.v3+json',
-    'Content-Type':   'application/json'
-  };
+  /* ── 2. Netlify Deploy Hook: declanșează redeploy ── */
+  if (netlifyHk) {
+    st.textContent = 'Declanșare redeploy Netlify...';
+    st.style.color = 'var(--tx3)';
+    try {
+      const r2 = await fetch(netlifyHk, { method: 'POST' });
+      if (r2.ok || r2.status === 200 || r2.status === 204) { results.push('Netlify ✓'); }
+      else { results.push('Netlify ✕ HTTP ' + r2.status); }
+    } catch(e) { results.push('Netlify ✕ ' + e.message); }
+  }
 
-  try {
-    let sha;
-    const r0 = await fetch(
-      'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
-      { headers: hdrs }
-    );
-    if (r0.ok) { sha = (await r0.json()).sha; }
-
-    const body = {
-      message: 'Admin: actualizare conținut · ' + new Date().toLocaleString('ro-RO'),
-      content: encoded,
-      branch: 'main'
-    };
-    if (sha) body.sha = sha;
-
-    const r1 = await fetch(
-      'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE,
-      { method: 'PUT', headers: hdrs, body: JSON.stringify(body) }
-    );
-
-    if (r1.ok) {
-      localStorage.removeItem('catalindrive_pending');
-      btn.innerHTML  = '✓ Publicat!';
-      btn.className  = 'pub-btn ok';
-      btn.disabled   = false;
-      st.textContent = 'Site-ul se actualizează în ~1 min';
-      st.style.color = 'var(--success)';
-      toast('Publicat pe GitHub! Site-ul se va actualiza în 1–2 minute.', 'success');
-      setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 5000);
-    } else {
-      const err = await r1.json().catch(() => ({}));
-      throw new Error(err.message || 'HTTP ' + r1.status);
-    }
-  } catch(e) {
+  /* ── Rezultat final ── */
+  const ok = results.every(r => r.includes('✓'));
+  btn.disabled = false;
+  if (ok) {
+    localStorage.removeItem('catalindrive_pending');
+    btn.innerHTML  = '✓ Publicat!';
+    btn.className  = 'pub-btn ok';
+    st.textContent = results.join(' · ') + ' · ~1 min';
+    st.style.color = 'var(--success)';
+    toast('Publicat cu succes! ' + results.join(', ') + '. Site-ul se actualizează în ~1 minut.', 'success');
+    setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 6000);
+  } else {
     btn.innerHTML  = '✕ Eroare';
     btn.className  = 'pub-btn err';
-    btn.disabled   = false;
-    st.textContent = e.message;
+    st.textContent = results.join(' · ');
     st.style.color = 'var(--danger)';
-    toast('Eroare la publicare: ' + e.message, 'danger');
-    setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 5000);
+    toast('Eroare la publicare: ' + results.join(', '), 'danger');
+    setTimeout(() => { btn.innerHTML = PUB_ICON; updatePubBtn(); }, 6000);
   }
 }
 
 function saveGHToken() {
   const t = (document.getElementById('gh-token').value || '').trim();
-  if (t) {
-    localStorage.setItem('catalindrive_gh_token', t);
-    toast('Token GitHub salvat.', 'success');
-  } else {
-    localStorage.removeItem('catalindrive_gh_token');
-    toast('Token șters.', 'info');
-  }
+  if (t) { localStorage.setItem('catalindrive_gh_token', t); toast('Token GitHub salvat.', 'success'); }
+  else   { localStorage.removeItem('catalindrive_gh_token'); toast('Token GitHub șters.', 'info'); }
+  updatePubBtn();
+}
+
+function saveNetlifyHook() {
+  const h = (document.getElementById('netlify-hook').value || '').trim();
+  if (h) { localStorage.setItem('catalindrive_netlify_hook', h); toast('Netlify hook salvat.', 'success'); }
+  else   { localStorage.removeItem('catalindrive_netlify_hook'); toast('Netlify hook șters.', 'info'); }
   updatePubBtn();
 }
 
