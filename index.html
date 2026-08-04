@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<script src="./image-slot.js"></script>
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --bg:       #f8f4ed;
+  --bg-alt:   #f2ebe0;
+  --dark:     #14120f;
+  --dark-2:   #0f0d0a;
+  --amber:    #f2b418;
+  --amber-dk: #d99f0a;
+  --orange:   #c4551f;
+  --orange-lt:#b0500f;
+  --tx:       #14120f;
+  --tx2:      #3b352c;
+  --tx3:      #6b6252;
+  --card:     #f2ebd9;
+  --card-lt:  #fdf6e3;
+  --ff-d: "Baloo 2", system-ui, sans-serif;
+  --ff-b: "Figtree", system-ui, sans-serif;
+  --r-sm: 14px; --r-md: 22px; --r-lg: 32px; --r-xl: 44px;
+  --sh-sm: 0 2px 8px rgba(20,18,15,.07),0 1px 3px rgba(20,18,15,.05);
+  --sh-md: 0 6px 24px rgba(20,18,15,.11),0 2px 8px rgba(20,18,15,.07);
+  --sh-lg: 0 20px 56px rgba(20,18,15,.16),0 6px 20px rgba(20,18,15,.09);
+  --sh-amb: 0 6px 28px rgba(242,180,24,.38);
+  --ease: cubic-bezier(.16,1,.3,1);
+  --spring: cubic-bezier(.34,1.56,.64,1);
+  --tf: 150ms var(--ease);
+  --tb: 260ms var(--ease);
+  --ts: 440ms var(--ease);
+}
+
+/* ── RESET ──────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--ff-b);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:var(--orange-lt);text-underline-offset:3px}
+a:hover{color:var(--amber)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+::selection{background:rgba(242,180,24,.25)}
+
+/* ── KEYFRAMES ──────────────────────────────────────────────────── */
+@keyframes fadeUp  {from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes fadeIn  {from{opacity:0}to{opacity:1}}
+@keyframes scaleUp {from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+@keyframes menuIn  {from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes float   {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse   {0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes ringOut {0%{transform:scale(1);opacity:.5}100%{transform:scale(1.55);opacity:0}}
+@keyframes heroIn  {from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ── SCROLL REVEAL ──────────────────────────────────────────────── */
+.rv,.rv-l,.rv-s{opacity:0;transition:opacity var(--ts),transform var(--ts)}
+.rv  {transform:translateY(22px)}
+.rv-l{transform:translateX(-22px)}
+.rv-s{transform:scale(.94)}
+.rv.in,.rv-l.in,.rv-s.in{opacity:1;transform:none}
+.d1{transition-delay:60ms}.d2{transition-delay:120ms}.d3{transition-delay:180ms}
+.d4{transition-delay:240ms}.d5{transition-delay:300ms}.d6{transition-delay:360ms}
+.washed{filter:saturate(.55) contrast(.88) brightness(1.08) opacity(.92)}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.ct{max-width:1160px;margin:0 auto;padding:0 clamp(16px,4vw,28px)}
+.ct-narrow{max-width:860px;margin:0 auto;padding:0 clamp(16px,4vw,28px)}
+
+/* ── BUTTONS ────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--ff-d);font-weight:700;font-size:16px;
+  padding:13px 26px;border-radius:999px;border:none;cursor:pointer;
+  text-decoration:none;white-space:nowrap;min-height:48px;
+  transition:background var(--tf),transform var(--tf),box-shadow var(--tf),color var(--tf);
+}
+.btn:active{transform:scale(.97)!important}
+.btn-amber{background:var(--amber);color:var(--dark);box-shadow:var(--sh-amb)}
+.btn-amber:hover{background:var(--amber-dk);color:var(--dark);box-shadow:0 10px 36px rgba(242,180,24,.52);transform:translateY(-2px)}
+.btn-dark{background:var(--dark);color:var(--bg)}
+.btn-dark:hover{background:#2a241c;color:var(--bg);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--tx);border:1.5px solid rgba(20,18,15,.18)}
+.btn-ghost:hover{background:rgba(20,18,15,.06)}
+.btn-ghost-w{background:transparent;color:var(--bg);border:1.5px solid rgba(248,244,237,.28)}
+.btn-ghost-w:hover{background:rgba(248,244,237,.09);color:var(--bg)}
+.btn-sm{font-size:15px;padding:10px 20px;min-height:42px}
+.btn-lg{font-size:17px;padding:16px 32px;min-height:54px}
+
+/* ── EYEBROW ────────────────────────────────────────────────────── */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:16px;
+}
+.eyebrow::before{content:'';width:22px;height:2px;background:var(--orange);border-radius:2px;flex-shrink:0}
+
+/* ── CHIPS ──────────────────────────────────────────────────────── */
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:5px 13px;border-radius:999px}
+.chip-amber{background:#fdf1d3;color:#5a3c05}
+.chip-green{background:#edf7e1;color:#38521a}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.site-hdr{
+  position:sticky;top:0;z-index:30;
+  background:rgba(248,244,237,.92);
+  backdrop-filter:blur(18px) saturate(1.5);
+  -webkit-backdrop-filter:blur(18px) saturate(1.5);
+  border-bottom:1px solid rgba(20,18,15,.06);
+  transition:box-shadow var(--tb);
+}
+.site-hdr.scrolled{box-shadow:0 2px 18px rgba(20,18,15,.1)}
+.hdr-in{
+  display:flex;align-items:center;gap:20px;
+  padding:11px clamp(16px,4vw,28px);max-width:1160px;margin:0 auto;
+}
+.logo-btn{background:none;border:0;padding:0;cursor:pointer;display:flex;align-items:center;margin-right:auto;transition:opacity var(--tf)}
+.logo-btn:hover{opacity:.8}
+.logo-sub{font-family:var(--ff-d);font-weight:700;font-size:10px;letter-spacing:.18em;color:var(--orange);line-height:1;text-transform:uppercase}
+.logo-name{font-family:var(--ff-d);font-weight:800;font-size:19px;letter-spacing:.005em;color:var(--dark);line-height:1.1}
+.nav-lnk{
+  background:none;border:0;cursor:pointer;font:inherit;font-size:14px;font-weight:500;
+  color:var(--tx2);padding:8px 13px;border-radius:999px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:background var(--tf),color var(--tf);white-space:nowrap;
+}
+.nav-lnk:hover{background:rgba(20,18,15,.07);color:var(--tx)}
+.nav-dot{width:5px;height:5px;border-radius:999px;background:var(--amber);display:block}
+.mob-icon{width:44px;height:44px;border-radius:999px;border:0;cursor:pointer;display:grid;place-items:center;transition:background var(--tf)}
+.mob-menu{animation:menuIn 200ms var(--ease) both;border-top:1px solid rgba(20,18,15,.07);padding:8px 16px 20px;background:var(--bg)}
+.mob-nav-btn{
+  width:100%;background:none;border:0;cursor:pointer;
+  font-family:var(--ff-d);font-weight:700;font-size:18px;color:var(--tx);
+  text-align:left;padding:15px 20px;min-height:50px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:color var(--tf);
+}
+.mob-nav-btn:hover{color:var(--orange)}
+
+/* ── HERO ───────────────────────────────────────────────────────── */
+.hero{
+  background:var(--dark-2);position:relative;overflow:hidden;
+  padding:clamp(56px,9vw,110px) 0 clamp(64px,10vw,120px);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 65% 60% at 80% 30%,rgba(242,180,24,.16) 0%,transparent 65%),
+    radial-gradient(ellipse 55% 50% at 15% 80%,rgba(196,85,31,.13) 0%,transparent 55%);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 40%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 40%,transparent 100%);
+}
+.hero-in{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:1fr;
+  gap:clamp(40px,6vw,64px);align-items:center;
+}
+@media(min-width:760px){.hero-in{grid-template-columns:1.1fr .9fr}}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:18px;
+}
+.hero-eyebrow::before{content:'';width:20px;height:2px;background:var(--amber);border-radius:2px}
+.hero-h1{
+  font-family:var(--ff-d);font-weight:800;
+  font-size:clamp(40px,5.5vw,70px);line-height:1.04;letter-spacing:-.025em;
+  color:#f8f4ed;margin:0 0 22px;text-wrap:pretty;
+}
+.hero-h1 em{
+  font-style:normal;
+  background:linear-gradient(130deg,var(--amber) 0%,#ff8c42 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(17px,2vw,20px);line-height:1.65;
+  color:rgba(248,244,237,.68);margin:0 0 32px;max-width:48ch;text-wrap:pretty;
+}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px}
+.hero-stats{
+  display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;
+  padding-top:28px;border-top:1px solid rgba(248,244,237,.1);
+  animation:heroIn .7s var(--ease) .2s both;
+}
+.hero-stat-n{font-family:var(--ff-d);font-weight:800;font-size:clamp(32px,4vw,46px);line-height:1;color:var(--amber)}
+.hero-stat-l{font-size:13px;color:rgba(248,244,237,.5);margin-top:5px}
+.hero-img{position:relative;aspect-ratio:1/1;width:100%;animation:scaleUp .8s var(--ease) .3s both}
+.hero-ring{
+  position:absolute;inset:-8px;border-radius:999px;
+  border:1px solid rgba(242,180,24,.2);
+  animation:pulse 4.5s ease-in-out infinite;
+}
+.hero-ring-2{
+  position:absolute;inset:-20px;border-radius:999px;
+  border:1px solid rgba(242,180,24,.1);
+  animation:pulse 4.5s ease-in-out 1s infinite;
+}
+.hero-badge{
+  position:absolute;bottom:6%;left:-6%;
+  background:#fff;border-radius:999px;padding:12px 22px;z-index:10;
+  box-shadow:var(--sh-lg);
+  font-family:var(--ff-d);font-weight:700;font-size:15px;
+  color:var(--dark);white-space:nowrap;animation:float 4s ease-in-out infinite;
+}
+.hero-badge-dot{display:inline-block;width:8px;height:8px;border-radius:999px;background:#4caf50;margin-right:8px;animation:pulse 2s ease-in-out infinite}
+
+/* ── SECTION SHARED ─────────────────────────────────────────────── */
+.sec{padding:clamp(56px,8vw,96px) 0 clamp(40px,6vw,64px)}
+.sec-sm{padding:clamp(32px,5vw,48px) 0}
+.sec-h2{font-family:var(--ff-d);font-weight:800;font-size:clamp(28px,3.5vw,42px);margin:0 0 10px;letter-spacing:-.02em;color:var(--tx)}
+.sec-lead{font-size:17px;color:var(--tx3);margin:0 0 40px;max-width:54ch}
+hr.div{border:0;height:1px;background:linear-gradient(to right,transparent,rgba(20,18,15,.1),transparent)}
+
+/* ── TRUST ──────────────────────────────────────────────────────── */
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.trust-card{
+  background:var(--card);border-radius:var(--r-lg);padding:28px;
+  transition:transform var(--tb),box-shadow var(--tb);cursor:default;
+}
+.trust-card:hover{transform:translateY(-5px);box-shadow:var(--sh-md)}
+.trust-num{
+  width:44px;height:44px;border-radius:var(--r-sm);background:var(--bg);
+  display:grid;place-items:center;font-family:var(--ff-d);font-weight:800;font-size:14px;
+  color:var(--orange);margin-bottom:18px;box-shadow:var(--sh-sm);
+}
+.trust-title{font-family:var(--ff-d);font-weight:700;font-size:20px;margin:0 0 8px;line-height:1.25}
+.trust-body{margin:0;font-size:15px;color:var(--tx2);line-height:1.65}
+
+/* ── STEPS ──────────────────────────────────────────────────────── */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:28px}
+.step-item{padding-top:0}
+.step-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.step-circle{
+  width:52px;height:52px;border-radius:999px;flex-shrink:0;
+  background:var(--amber);color:var(--dark);
+  display:grid;place-items:center;
+  font-family:var(--ff-d);font-weight:800;font-size:20px;
+  box-shadow:var(--sh-amb);
+  transition:transform var(--tb);
+}
+.step-item:hover .step-circle{transform:scale(1.1)}
+.step-lbl{font-family:var(--ff-d);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange)}
+.step-title{font-family:var(--ff-d);font-weight:700;font-size:20px;margin:0 0 8px;line-height:1.2}
+.step-body{margin:0;font-size:15px;color:var(--tx2)}
+
+/* ── DOCS CARD ──────────────────────────────────────────────────── */
+.docs-card{
+  background:linear-gradient(135deg,#fdf6e3 0%,var(--card) 100%);
+  border-radius:var(--r-lg);padding:32px 36px;max-width:800px;margin-top:36px;
+  border:1px solid rgba(196,85,31,.12);
+}
+.docs-list{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 28px}
+.docs-list li{font-size:15px;color:#4a3a12;padding:5px 0;display:flex;align-items:flex-start;gap:10px}
+.docs-list li::before{content:'';width:6px;height:6px;border-radius:999px;background:var(--orange);flex-shrink:0;margin-top:8px}
+
+/* ── INSTRUCTORS ────────────────────────────────────────────────── */
+.instr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
+.instr-card{position:relative}
+.instr-photo{
+  position:relative;width:100%;aspect-ratio:4/5;
+  border-radius:var(--r-lg);overflow:hidden;background:var(--card);
+  transition:transform var(--ts);
+}
+.instr-card:hover .instr-photo{transform:scale(.99)}
+.instr-name{font-family:var(--ff-d);font-weight:700;font-size:21px;margin:18px 0 5px}
+.instr-role{margin:0 0 10px;font-size:15px;color:var(--tx2)}
+
+/* ── TESTIMONIALS ───────────────────────────────────────────────── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.testi-card{
+  background:var(--card);border-radius:var(--r-lg);
+  padding:28px 30px;display:flex;flex-direction:column;gap:14px;margin:0;
+  transition:transform var(--tb),box-shadow var(--tb);
+}
+.testi-card:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.testi-stars{color:var(--amber);font-size:14px;letter-spacing:2px}
+.testi-q{margin:0;font-size:17px;line-height:1.6;color:var(--tx);font-style:italic;text-wrap:pretty;flex:1}
+.testi-footer{font-size:14px;color:var(--tx3);margin-top:auto}
+
+/* ── CTA BAND ───────────────────────────────────────────────────── */
+.cta-band{
+  background:var(--dark);border-radius:var(--r-xl);
+  padding:clamp(32px,5vw,56px);
+  display:grid;grid-template-columns:1fr auto;
+  gap:28px;align-items:center;
+}
+@media(max-width:760px){.cta-band{grid-template-columns:1fr}}
+.cta-h2{font-family:var(--ff-d);font-weight:800;font-size:clamp(22px,3.5vw,38px);color:var(--bg);margin:0 0 10px;letter-spacing:-.02em}
+.cta-sub{margin:0;font-size:17px;color:rgba(248,244,237,.6);max-width:44ch}
+.cta-acts{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ── PAGE HEADERS ───────────────────────────────────────────────── */
+.pg-hdr{padding:clamp(48px,7vw,80px) 0 clamp(24px,4vw,36px)}
+.pg-h1{font-family:var(--ff-d);font-weight:800;font-size:clamp(32px,5vw,58px);line-height:1.06;letter-spacing:-.025em;margin:0 0 16px;max-width:22ch;text-wrap:pretty}
+.pg-sub{font-size:clamp(16px,2vw,19px);color:var(--tx2);margin:0;max-width:58ch}
+
+/* ── CATEGORIES ─────────────────────────────────────────────────── */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.cat-card{
+  background:var(--card);border-radius:var(--r-lg);
+  padding:28px;display:flex;flex-direction:column;gap:14px;
+  transition:transform var(--tb),box-shadow var(--tb);
+}
+.cat-card:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.cat-badge{
+  width:62px;height:62px;border-radius:18px;flex-shrink:0;
+  background:var(--amber);color:var(--dark);
+  display:grid;place-items:center;
+  font-family:var(--ff-d);font-weight:800;font-size:21px;
+  box-shadow:var(--sh-amb);transition:transform var(--tb);
+}
+.cat-card:hover .cat-badge{transform:scale(1.08) rotate(-3deg)}
+.cat-name{font-family:var(--ff-d);font-weight:700;font-size:22px;margin:0;line-height:1.1}
+.cat-vehicle{margin:3px 0 0;font-size:14px;color:var(--tx3)}
+.cat-body{margin:0;font-size:15px;color:var(--tx2);line-height:1.65;flex:1}
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+
+/* ── PRICES ─────────────────────────────────────────────────────── */
+.prices-wrap{background:var(--card);border-radius:var(--r-lg);padding:10px 10px 4px;overflow-x:auto}
+.prices-tbl{width:100%;border-collapse:collapse;font-size:16px;min-width:500px}
+.prices-tbl th{text-align:left;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--tx3);padding:14px 20px;font-weight:700}
+.prices-tbl th:last-child{text-align:right}
+.prices-tbl td{padding:17px 20px;border-top:1px solid rgba(20,18,15,.08)}
+.prices-tbl td:last-child{text-align:right}
+.prices-tbl tbody tr{transition:background var(--tf)}
+.prices-tbl tbody tr:hover{background:rgba(242,180,24,.08)}
+.p-code{font-family:var(--ff-d);font-weight:800;font-size:19px}
+.p-name{font-size:13px;color:var(--tx3);margin-top:3px}
+.p-val{font-family:var(--ff-d);font-weight:800;font-size:20px;white-space:nowrap}
+
+/* ── INFO CARDS ─────────────────────────────────────────────────── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.info-card{background:var(--card);border-radius:var(--r-lg);padding:28px;transition:transform var(--tb),box-shadow var(--tb)}
+.info-card:hover{transform:translateY(-4px);box-shadow:var(--sh-sm)}
+.info-card-lt{background:var(--card-lt)}
+.info-h3{font-family:var(--ff-d);font-weight:700;font-size:21px;margin:0 0 12px}
+.info-body{margin:0;font-size:15px;color:var(--tx2);line-height:1.65}
+
+/* ── FAQ ────────────────────────────────────────────────────────── */
+.faq-list{display:flex;flex-direction:column;gap:8px}
+.faq-item{background:var(--card);border-radius:var(--r-md);overflow:hidden;transition:box-shadow var(--tb)}
+.faq-item:hover{box-shadow:var(--sh-sm)}
+.faq-btn{
+  width:100%;background:none;border:0;cursor:pointer;font:inherit;
+  text-align:left;display:flex;align-items:center;
+  gap:16px;padding:20px 24px;color:var(--tx);
+}
+.faq-q{font-family:var(--ff-d);font-weight:700;font-size:18px;flex:1;line-height:1.3}
+.faq-icon{
+  width:34px;height:34px;flex-shrink:0;border-radius:999px;
+  background:var(--bg);color:var(--orange);
+  display:grid;place-items:center;
+  font-family:var(--ff-d);font-weight:700;font-size:20px;
+  transition:background var(--tb),color var(--tb);
+}
+.faq-item:hover .faq-icon{background:var(--amber);color:var(--dark)}
+.faq-a{margin:0;padding:0 68px 22px 24px;font-size:16px;color:var(--tx2);line-height:1.65;text-wrap:pretty}
+
+/* ── CONTACT ────────────────────────────────────────────────────── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:40px;align-items:start}
+.contact-stack{display:flex;flex-direction:column;gap:14px}
+.contact-card{background:var(--card);border-radius:var(--r-lg);padding:26px 28px;transition:transform var(--tb)}
+.contact-card:hover{transform:translateY(-3px)}
+.contact-h3{font-family:var(--ff-d);font-weight:700;font-size:19px;margin:0 0 10px}
+.sched-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 20px;font-size:16px;color:var(--tx2)}
+.sched-lbl{color:var(--tx3)}
+.map-wrap{position:relative;width:100%;aspect-ratio:21/9;border-radius:var(--r-lg);overflow:hidden;background:var(--card)}
+
+/* ── FOOTER ─────────────────────────────────────────────────────── */
+.site-ftr{background:var(--dark);color:var(--bg);padding:clamp(48px,6vw,72px) 0 clamp(24px,4vw,36px);margin-top:clamp(40px,6vw,72px)}
+.ftr-in{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px 48px;align-items:start}
+@media(max-width:760px){.ftr-in{grid-template-columns:1fr}}
+.ftr-brand{font-family:var(--ff-d);font-weight:800;font-size:20px;margin-bottom:8px}
+.ftr-sub{font-size:14px;color:rgba(248,244,237,.45);max-width:30ch;margin:0}
+.ftr-nav{display:flex;flex-direction:column;gap:4px}
+.ftr-lnk{
+  background:none;border:0;padding:5px 0;cursor:pointer;
+  font:inherit;font-size:15px;color:rgba(248,244,237,.65);
+  text-align:left;width:fit-content;transition:color var(--tf);
+}
+.ftr-lnk:hover{color:var(--amber)}
+.ftr-contact{display:flex;flex-direction:column;gap:7px;font-size:15px}
+.ftr-col-label{font-family:var(--ff-d);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(248,244,237,.35);margin-bottom:14px}
+.ftr-div{height:1px;background:rgba(248,244,237,.08);margin:clamp(24px,4vw,40px) 0 20px}
+.ftr-copy{font-size:13px;color:rgba(248,244,237,.3)}
+</style>
+<script>
+(function(){
+  function initReveal(){
+    if(!("IntersectionObserver" in window)){
+      document.querySelectorAll(".rv,.rv-l,.rv-s").forEach(function(e){e.classList.add("in")});return;
+    }
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}});
+    },{threshold:.1,rootMargin:"0px 0px -28px 0px"});
+    function obs(){document.querySelectorAll(".rv,.rv-l,.rv-s").forEach(function(e){if(!e.classList.contains("in"))io.observe(e)})}
+    obs();
+    new MutationObserver(obs).observe(document.body,{childList:true,subtree:true});
+  }
+  function initScroll(){
+    var h=document.querySelector(".site-hdr");
+    if(!h)return;
+    function up(){h.classList.toggle("scrolled",window.scrollY>8)}
+    window.addEventListener("scroll",up,{passive:true});up();
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){initReveal();initScroll()});}
+  else{initReveal();initScroll();}
+})();
+</script>
+</helmet>
+
+<div style="min-height:100vh">
+
+<!-- ═══════════════════════════════════════ HEADER ══ -->
+<header class="site-hdr">
+  <div class="hdr-in">
+    <button onClick="{{ goHome }}" class="logo-btn" aria-label="Acasă Catalin Drive">
+      <span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+        <svg width="156" height="21" viewBox="0 0 300 44" fill="none" aria-hidden="true" style="display:block;margin-bottom:-1px">
+          <path d="M7 42V27C42 9 112 1 162 3c52 2 96 15 131 36" stroke="#c4551f" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-sub">Școala de Șoferi</span>
+        <span class="logo-name">Cătălin Drive</span>
+      </span>
+    </button>
+
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <nav style="display:flex;align-items:center;gap:2px">
+      <button onClick="{{ goHome }}" class="nav-lnk">Acasă<sc-if value="{{ atHome }}" hint-placeholder-val="{{ true }}"><span class="nav-dot"></span></sc-if></button>
+      <button onClick="{{ goCategorii }}" class="nav-lnk">Categorii<sc-if value="{{ atCategorii }}" hint-placeholder-val="{{ false }}"><span class="nav-dot"></span></sc-if></button>
+      <button onClick="{{ goPreturi }}" class="nav-lnk">Prețuri<sc-if value="{{ atPreturi }}" hint-placeholder-val="{{ false }}"><span class="nav-dot"></span></sc-if></button>
+      <button onClick="{{ goContact }}" class="nav-lnk">Contact<sc-if value="{{ atContact }}" hint-placeholder-val="{{ false }}"><span class="nav-dot"></span></sc-if></button>
+    </nav>
+    <a href="{{ telHref }}" class="btn btn-amber btn-sm">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.9.36 1.79.7 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.27a2 2 0 0 1 2.11-.45c.84.34 1.73.57 2.63.7A2 2 0 0 1 22 16.92z"/></svg>
+      {{ phone }}
+    </a>
+    </sc-if>
+
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <a href="{{ telHref }}" aria-label="Sună acum" class="mob-icon btn-amber" style="width:44px;height:44px;border-radius:999px;display:grid;place-items:center;text-decoration:none;box-shadow:var(--sh-amb)">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.9.36 1.79.7 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.27a2 2 0 0 1 2.11-.45c.84.34 1.73.57 2.63.7A2 2 0 0 1 22 16.92z"/></svg>
+      </a>
+      <button onClick="{{ toggleMenu }}" aria-label="Meniu" class="mob-icon" style="background:#f2ebd9;color:var(--dark)">
+        <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </sc-if>
+        <sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </sc-if>
+      </button>
+    </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div class="mob-menu">
+    <nav style="display:flex;flex-direction:column;background:#f2ebd9;border-radius:24px;overflow:hidden;margin-bottom:12px">
+      <button onClick="{{ goHome }}" class="mob-nav-btn">Acasă<sc-if value="{{ atHome }}" hint-placeholder-val="{{ true }}"><span style="width:8px;height:8px;border-radius:999px;background:var(--amber);display:block"></span></sc-if></button>
+      <button onClick="{{ goCategorii }}" class="mob-nav-btn" style="border-top:1px solid rgba(20,18,15,.08)">Categorii<sc-if value="{{ atCategorii }}" hint-placeholder-val="{{ false }}"><span style="width:8px;height:8px;border-radius:999px;background:var(--amber);display:block"></span></sc-if></button>
+      <button onClick="{{ goPreturi }}" class="mob-nav-btn" style="border-top:1px solid rgba(20,18,15,.08)">Prețuri<sc-if value="{{ atPreturi }}" hint-placeholder-val="{{ false }}"><span style="width:8px;height:8px;border-radius:999px;background:var(--amber);display:block"></span></sc-if></button>
+      <button onClick="{{ goContact }}" class="mob-nav-btn" style="border-top:1px solid rgba(20,18,15,.08)">Contact<sc-if value="{{ atContact }}" hint-placeholder-val="{{ false }}"><span style="width:8px;height:8px;border-radius:999px;background:var(--amber);display:block"></span></sc-if></button>
+    </nav>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <a href="{{ telHref }}" class="btn btn-amber" style="justify-content:center">Sună</a>
+      <a href="{{ waHref }}" class="btn btn-dark" style="justify-content:center">WhatsApp</a>
+    </div>
+  </div>
+  </sc-if>
+</header>
+
+<!-- ═══════════════════════════════════════ HOME ═══ -->
+<sc-if value="{{ atHome }}" hint-placeholder-val="{{ true }}">
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="ct">
+      <div class="hero-in">
+        <div style="animation:heroIn .65s var(--ease) both">
+          <div class="hero-eyebrow">Adjud · Vrancea · Din 2012</div>
+          <h1 class="hero-h1">Obții permisul<br><em>din prima</em></h1>
+          <p class="hero-sub">Predăm toate categoriile auto — de la B până la CE — cu instructori experimentați, mașini cu dublă comandă și program flexibil.</p>
+          <div class="hero-ctas">
+            <a href="{{ telHref }}" class="btn btn-amber btn-lg">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.9.36 1.79.7 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.27a2 2 0 0 1 2.11-.45c.84.34 1.73.57 2.63.7A2 2 0 0 1 22 16.92z"/></svg>
+              Sună acum
+            </a>
+            <a href="{{ waHref }}" class="btn btn-ghost-w btn-lg">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+              WhatsApp
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div><div class="hero-stat-n">92%</div><div class="hero-stat-l">Rată de promovare</div></div>
+            <div><div class="hero-stat-n">7</div><div class="hero-stat-l">Categorii disponibile</div></div>
+            <div><div class="hero-stat-n">12+</div><div class="hero-stat-l">Ani de experiență</div></div>
+          </div>
+        </div>
+
+        <div class="hero-img" style="max-width:480px;margin:0 auto">
+          <div class="hero-ring"></div>
+          <div class="hero-ring-2"></div>
+          <image-slot id="cd-hero" shape="circle" fit="cover" class="washed" placeholder="Foto mașină de școală / instructor cu cursant (pătrat)" style="width:100%;height:100%"></image-slot>
+          <div class="hero-badge"><span class="hero-badge-dot"></span>Dublă comandă</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="sec">
+    <div class="ct">
+      <div class="rv">
+        <div class="eyebrow">De ce Catalin Drive</div>
+        <h2 class="sec-h2">Șase motive să alegi cu noi</h2>
+        <p class="sec-lead">Cursanți din Adjud și comunele din jur ne recomandă de peste 12 ani.</p>
+      </div>
+      <div class="trust-grid">
+        <sc-for list="{{ trust }}" as="t" hint-placeholder-count="6">
+          <div class="trust-card rv">
+            <div class="trust-num">{{ t.n }}</div>
+            <h3 class="trust-title">{{ t.title }}</h3>
+            <p class="trust-body">{{ t.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div">
+
+  <!-- STEPS -->
+  <section class="sec">
+    <div class="ct">
+      <div class="rv">
+        <div class="eyebrow">Procesul de înscriere</div>
+        <h2 class="sec-h2">Cum te înscrii, pas cu pas</h2>
+        <p class="sec-lead">De la primul telefon până la examen. Dosarul îl faci o singură dată, te ajutăm cu fiecare act.</p>
+      </div>
+      <div class="steps-grid">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+          <div class="step-item rv">
+            <div class="step-head">
+              <div class="step-circle">{{ s.n }}</div>
+              <div class="step-lbl">Pasul {{ s.n }}</div>
+            </div>
+            <h3 class="step-title">{{ s.title }}</h3>
+            <p class="step-body">{{ s.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+      <div class="docs-card rv">
+        <h3 style="font-family:var(--ff-d);font-weight:700;font-size:21px;margin:0 0 18px;color:var(--tx)">Actele necesare la dosar</h3>
+        <ul class="docs-list">
+          <li>Cerere-tip de înscriere, completată la sediu</li>
+          <li>Carte de identitate, în original și copie</li>
+          <li>Fișă medicală cu mențiunea „apt pentru categoria…"</li>
+          <li>Aviz psihologic de la un cabinet autorizat</li>
+          <li>Certificat de cazier judiciar</li>
+          <li>Permisul de conducere actual, în copie (BE, C, CE, D)</li>
+          <li>Dovada plății tarifului de școlarizare</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div">
+
+  <!-- INSTRUCTORS -->
+  <section class="sec">
+    <div class="ct">
+      <div class="rv">
+        <div class="eyebrow">Echipa</div>
+        <h2 class="sec-h2">Instructorii tăi</h2>
+        <p class="sec-lead">Aceeași persoană te însoțește de la prima oră până la examen.</p>
+      </div>
+      <div class="instr-grid">
+        <sc-for list="{{ instructors }}" as="i" hint-placeholder-count="3">
+          <div class="instr-card rv">
+            <div class="instr-photo">
+              <image-slot id="{{ i.slot }}" shape="rounded" radius="28" fit="cover" class="washed" placeholder="Portret instructor" style="width:100%;height:100%"></image-slot>
+            </div>
+            <h3 class="instr-name">{{ i.name }}</h3>
+            <p class="instr-role">{{ i.role }}</p>
+            <span class="chip chip-amber">{{ i.cats }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div">
+
+  <!-- TESTIMONIALS -->
+  <section class="sec">
+    <div class="ct">
+      <div class="rv">
+        <div class="eyebrow">Recenzii</div>
+        <h2 class="sec-h2">Ce spun cursanții</h2>
+      </div>
+      <div class="testi-grid" style="margin-top:32px">
+        <sc-for list="{{ testimonials }}" as="q" hint-placeholder-count="3">
+          <blockquote class="testi-card rv">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-q">„{{ q.text }}"</p>
+            <footer class="testi-footer">{{ q.name }} · Categoria {{ q.cat }}</footer>
+          </blockquote>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section style="padding:0 0 clamp(64px,9vw,100px)">
+    <div class="ct">
+      <div class="cta-band rv">
+        <div>
+          <h2 class="cta-h2">Grupă nouă în fiecare lună</h2>
+          <p class="cta-sub">Sună sau scrie pe WhatsApp și îți spunem când începe următoarea grupă și ce acte îți trebuie.</p>
+        </div>
+        <div class="cta-acts">
+          <a href="{{ telHref }}" class="btn btn-amber btn-lg">{{ phone }}</a>
+          <a href="{{ waHref }}" class="btn btn-ghost-w btn-lg">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</sc-if>
+
+<!-- ═══════════════════════════════════════ CATEGORII ══ -->
+<sc-if value="{{ atCategorii }}" hint-placeholder-val="{{ false }}">
+<main>
+  <div class="ct pg-hdr">
+    <div class="rv">
+      <div class="eyebrow">Categorii</div>
+      <h1 class="pg-h1">Șapte categorii, un singur loc</h1>
+      <p class="pg-sub">Predăm teoria în sala proprie și practica pe traseele de examen de la Focșani. Numărul de ore este cel minim legal; poți adăuga ore suplimentare oricând.</p>
+    </div>
+  </div>
+
+  <div class="ct" style="padding-bottom:clamp(64px,9vw,100px)">
+    <div class="cat-grid">
+      <sc-for list="{{ categories }}" as="c" hint-placeholder-count="7">
+        <article class="cat-card rv">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div class="cat-badge">{{ c.code }}</div>
+            <div>
+              <h2 class="cat-name">{{ c.name }}</h2>
+              <p class="cat-vehicle">{{ c.vehicle }}</p>
+            </div>
+          </div>
+          <p class="cat-body">{{ c.body }}</p>
+          <div class="cat-chips">
+            <span class="chip chip-green">Vârsta minimă {{ c.age }}</span>
+            <span class="chip chip-amber">{{ c.hours }} ore practică</span>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:36px">
+      <button onClick="{{ goPreturi }}" class="btn btn-amber">Vezi prețurile</button>
+      <a href="{{ waHref }}" class="btn btn-ghost">Întreabă pe WhatsApp</a>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══════════════════════════════════════ PREȚURI ══ -->
+<sc-if value="{{ atPreturi }}" hint-placeholder-val="{{ false }}">
+<main>
+  <div class="ct pg-hdr">
+    <div class="rv">
+      <div class="eyebrow">Prețuri</div>
+      <h1 class="pg-h1">Un preț, fără costuri ascunse</h1>
+      <p class="pg-sub">Tariful include cursul de legislație, orele de practică și programarea la examen. Taxele către poliție și cabinetul medical se plătesc separat, la instituțiile respective.</p>
+    </div>
+  </div>
+
+  <div class="ct rv" style="padding-bottom:28px">
+    <div class="prices-wrap">
+      <table class="prices-tbl">
+        <thead>
+          <tr>
+            <th>Categorie</th>
+            <th>Ore practică</th>
+            <th>Ora suplimentară</th>
+            <th>Preț pachet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ prices }}" as="p" hint-placeholder-count="7">
+            <tr>
+              <td><div class="p-code">{{ p.code }}</div><div class="p-name">{{ p.name }}</div></td>
+              <td style="color:var(--tx2)">{{ p.hours }}</td>
+              <td style="color:var(--tx2)">{{ p.extra }}</td>
+              <td><div class="p-val">{{ p.price }}</div></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--tx3);margin:12px 4px 0">Prețuri orientative, valabile pentru grupele din 2026. Confirmăm tariful exact la înscriere.</p>
+  </div>
+
+  <div class="ct" style="padding-bottom:32px">
+    <div class="info-grid">
+      <div class="info-card rv d1">
+        <h3 class="info-h3">Plata în rate</h3>
+        <p class="info-body">Poți împărți taxa în două sau trei tranșe: prima la înscriere, restul până la programarea examenului. Fără dobândă și fără dosar de credit.</p>
+      </div>
+      <div class="info-card rv d2">
+        <h3 class="info-h3">Ce include tariful</h3>
+        <p class="info-body">24 de ore de legislație, orele de practică din pachet, mașina și combustibilul, programarea la examen și traseele de examinare exersate înainte.</p>
+      </div>
+      <div class="info-card info-card-lt rv d3">
+        <h3 class="info-h3">Ce se plătește separat</h3>
+        <p class="info-body">Fișa medicală, avizul psihologic, cazierul auto și taxele către poliția rutieră. Îți spunem exact unde le faci în Adjud.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ct-narrow" style="padding-bottom:clamp(64px,9vw,100px)">
+    <h2 class="rv sec-h2" style="margin-bottom:24px">Întrebări frecvente</h2>
+    <div class="faq-list">
+      <sc-for list="{{ faq }}" as="f" hint-placeholder-count="5">
+        <div class="faq-item rv">
+          <button onClick="{{ f.toggle }}" class="faq-btn">
+            <span class="faq-q">{{ f.q }}</span>
+            <span class="faq-icon">{{ f.sign }}</span>
+          </button>
+          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+            <p class="faq-a">{{ f.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══════════════════════════════════════ CONTACT ══ -->
+<sc-if value="{{ atContact }}" hint-placeholder-val="{{ false }}">
+<main>
+  <div class="ct" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(36px,5vw,56px)">
+    <div class="contact-grid">
+      <div class="rv-l">
+        <div class="eyebrow">Contact</div>
+        <h1 class="pg-h1">Sună, scrie sau trece pe la sediu</h1>
+        <p style="font-size:18px;color:var(--tx2);margin:0 0 28px;max-width:46ch">Răspundem la telefon în timpul programului și pe WhatsApp și seara. Îți spunem când începe grupa următoare.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="{{ telHref }}" class="btn btn-amber btn-lg">{{ phone }}</a>
+          <a href="{{ waHref }}" class="btn btn-dark btn-lg">WhatsApp</a>
+        </div>
+      </div>
+      <div class="contact-stack rv">
+        <div class="contact-card">
+          <h3 class="contact-h3">Sediu și sala de curs</h3>
+          <p style="margin:0;font-size:16px;color:var(--tx2)">{{ address }}</p>
+        </div>
+        <div class="contact-card">
+          <h3 class="contact-h3">Program</h3>
+          <div class="sched-grid">
+            <span class="sched-lbl">Luni – Vineri</span><span>09:00 – 17:00</span>
+            <span class="sched-lbl">Sâmbătă</span><span>Închis</span>
+            <span class="sched-lbl">Duminică</span><span>Închis</span>
+          </div>
+        </div>
+        <div class="contact-card" style="background:var(--card-lt)">
+          <h3 class="contact-h3">Orele de practică</h3>
+          <p style="margin:0;font-size:16px;color:var(--tx2)">Se pot programa între 07:00 și 21:00, inclusiv sâmbăta. Te luăm de la o adresă din Adjud, dacă vrei.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ct" style="padding-bottom:clamp(64px,9vw,100px)">
+    <h2 class="rv sec-h2" style="margin-bottom:8px">Cum ajungi</h2>
+    <p class="rv" style="font-size:16px;color:var(--tx3);margin:0 0 24px;max-width:52ch">Sediul este în centrul Adjudului, la câteva minute de gară. Parcare în fața clădirii.</p>
+    <div class="map-wrap rv">
+      <image-slot id="cd-harta" shape="rounded" radius="28" fit="cover" placeholder="Captură hartă cu sediul (înlocuiește cu harta reală)" style="width:100%;height:100%"></image-slot>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+      <a href="{{ mapsHref }}" target="_blank" rel="noopener" class="btn btn-ghost">Deschide în Google Maps</a>
+      <button onClick="{{ goPreturi }}" class="btn btn-ghost">Vezi prețurile</button>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<!-- ═══════════════════════════════════════ FOOTER ══ -->
+<footer class="site-ftr">
+  <div class="ct">
+    <div class="ftr-in">
+      <div>
+        <div class="ftr-brand">Cătălin Drive</div>
+        <p class="ftr-sub">Școală de șoferi autorizată, Adjud, județul Vrancea. Categoriile A, B, BE, C, CE, D și tractor.</p>
+      </div>
+      <div>
+        <div class="ftr-col-label">Navigare</div>
+        <div class="ftr-nav">
+          <button onClick="{{ goHome }}" class="ftr-lnk">Acasă</button>
+          <button onClick="{{ goCategorii }}" class="ftr-lnk">Categorii</button>
+          <button onClick="{{ goPreturi }}" class="ftr-lnk">Prețuri</button>
+          <button onClick="{{ goContact }}" class="ftr-lnk">Contact</button>
+        </div>
+      </div>
+      <div>
+        <div class="ftr-col-label">Contact</div>
+        <div class="ftr-contact">
+          <a href="{{ telHref }}" style="color:var(--amber);text-decoration:none">{{ phone }}</a>
+          <span style="color:rgba(248,244,237,.55)">{{ address }}</span>
+          <span style="color:rgba(248,244,237,.35)">Luni – Vineri 09:00 – 17:00</span>
+        </div>
+      </div>
+    </div>
+    <div class="ftr-div"></div>
+    <div class="ftr-copy">© 2026 Cătălin Drive · Adjud, Vrancea</div>
+  </div>
+</footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;phone&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;0755 457 783&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contact&quot;},&quot;address&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Str. Ion Roată, 625100 Adjud, județul Vrancea&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contact&quot;}}">
+class Component extends DCLogic {
+  state = { page: "acasa", openFaq: 0, isMobile: false, menuOpen: false };
+
+  componentDidMount() {
+    this.mql = window.matchMedia("(max-width: 860px)");
+    this.onMql = e => this.setState({ isMobile: e.matches, menuOpen: false });
+    this.setState({ isMobile: this.mql.matches });
+    this.mql.addEventListener("change", this.onMql);
+  }
+
+  componentWillUnmount() {
+    if (this.mql) this.mql.removeEventListener("change", this.onMql);
+  }
+
+  go(page) {
+    this.setState({ page, menuOpen: false });
+    if (typeof window !== "undefined") window.scrollTo(0, 0);
+  }
+
+  renderVals() {
+    const phone = this.props.phone ?? "0755 457 783";
+    const address = this.props.address ?? "Str. Ion Roată, 625100 Adjud, județul Vrancea";
+    const digits = phone.replace(/[^0-9+]/g, "");
+    const page = this.state.page;
+
+    const faqData = [
+      { q: "Cât durează școala de la înscriere la examen?", a: "Pentru categoria B, în medie șase până la opt săptămâni: cursul de legislație se face în paralel cu orele de practică, iar programarea la examen depinde de datele disponibile la poliția rutieră." },
+      { q: "Ce acte trebuie să aduc la înscriere?", a: "Cerere-tip completată la sediu, cartea de identitate în original și copie, fișa medicală, avizul psihologic, certificatul de cazier judiciar, dovada plății și, pentru categoriile BE, C, CE și D, copia permisului actual. Îți spunem unde obții fiecare document în Adjud." },
+      { q: "Pot plăti în rate?", a: "Da. Prima tranșă la înscriere, restul până la programarea examenului, în două sau trei plăți, fără dobândă." },
+      { q: "Îmi pot alege orele de practică?", a: "Da. Programăm orele între 07:00 și 21:00, inclusiv sâmbăta, și le stabilim de la o săptămână la alta în funcție de programul tău." },
+      { q: "Exersăm traseele de examen?", a: "Da. Ultimele ore le facem pe traseele folosite la examinare, în condiții cât mai apropiate de cele din ziua examenului." }
+    ];
+
+    return {
+      isMobile: this.state.isMobile,
+      isDesktop: !this.state.isMobile,
+      menuOpen: this.state.menuOpen,
+      menuClosed: !this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      phone,
+      address,
+      telHref: "tel:" + digits,
+      waHref: "https://wa.me/4" + digits.replace(/^\+?4?0?/, "0"),
+      mapsHref: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address),
+      atHome: page === "acasa",
+      atCategorii: page === "categorii",
+      atPreturi: page === "preturi",
+      atContact: page === "contact",
+      goHome: () => this.go("acasa"),
+      goCategorii: () => this.go("categorii"),
+      goPreturi: () => this.go("preturi"),
+      goContact: () => this.go("contact"),
+
+      trust: [
+        { n: "01", title: "Rată mare de promovare", body: "92% dintre cursanții noștri iau examenul din prima încercare." },
+        { n: "02", title: "Mașini noi, dublă comandă", body: "Flotă recentă, verificată, cu dublă comandă la toate categoriile." },
+        { n: "03", title: "Instructori răbdători", body: "Instructori cu peste zece ani de experiență, care explică până înțelegi." },
+        { n: "04", title: "Program flexibil", body: "Orele de practică se stabilesc împreună, între 07:00 și 21:00." },
+        { n: "05", title: "Plata în rate", body: "Taxa se poate împărți în două sau trei tranșe, fără dobândă." },
+        { n: "06", title: "Traseele de examen exersate", body: "Ultimele ore se fac pe traseele reale de examinare." }
+      ],
+
+      steps: [
+        { n: "1", title: "Suni sau scrii", body: "Îți spunem când începe grupa următoare și ce te costă categoria care te interesează." },
+        { n: "2", title: "Faci dosarul", body: "Fișa medicală, avizul psihologic și cazierul auto. Îți spunem unde le obții rapid în Adjud." },
+        { n: "3", title: "Cursul de legislație", body: "24 de ore în sala noastră, plus chestionare de antrenament pentru examenul teoretic." },
+        { n: "4", title: "Orele de practică", body: "Începi în poligon și continui în oraș, pe traseele pe care se dă examenul." },
+        { n: "5", title: "Examenul", body: "Te programăm, te însoțim și mergi la examen cu mașina pe care ai învățat." }
+      ],
+
+      instructors: [
+        { slot: "cd-instr-1", name: "Cătălin Rusu", role: "Instructor și administrator, 12 ani de experiență.", cats: "B · BE · C · CE" },
+        { slot: "cd-instr-2", name: "Andrei Popa", role: "Instructor practică, specializat pe categoriile grele.", cats: "C · CE · D" },
+        { slot: "cd-instr-3", name: "Mihaela Ionescu", role: "Instructor practică și curs de legislație.", cats: "A · B · Tractor" }
+      ],
+
+      testimonials: [
+        { text: "Am luat permisul din prima. Mi-au explicat de fiecare dată calm, fără să mă grăbească, iar ultimele ore le-am făcut exact pe traseul de examen.", name: "Ioana M.", cat: "B" },
+        { text: "Aveam nevoie de C și CE pentru firmă. Program făcut după turele mele și dosar rezolvat în două săptămâni.", name: "Vasile T.", cat: "CE" },
+        { text: "Cel mai bun raport preț-calitate din zonă. Mașini curate, instructori serioși, fără costuri surpriză la final.", name: "Robert D.", cat: "B" }
+      ],
+
+      categories: [
+        { code: "B", name: "Autoturism", vehicle: "Până la 3.500 kg", body: "Cea mai cerută categorie. Curs de legislație, poligon și traseele de examinare din Focșani.", age: "18 ani", hours: "30" },
+        { code: "A", name: "Motocicletă", vehicle: "A, A1, A2 și AM", body: "Toate subcategoriile de moto și moped, cu poligon amenajat pentru probele de îndemânare.", age: "16 ani", hours: "20" },
+        { code: "C", name: "Camion", vehicle: "Peste 3.500 kg", body: "Pentru cei care vor să lucreze în transporturi. Se poate combina cu atestatul profesional.", age: "21 ani", hours: "20" },
+        { code: "CE", name: "Camion cu remorcă", vehicle: "Ansamblu cu semiremorcă", body: "Practică pe ansamblu real, cu accent pe manevre de mers cu spatele și parcare la rampă.", age: "21 ani", hours: "15" },
+        { code: "D", name: "Autobuz", vehicle: "Transport persoane", body: "Categoria D pentru autobuz și microbuz, cu instructor specializat pe transport de persoane.", age: "24 ani", hours: "20" },
+        { code: "BE", name: "Autoturism cu remorcă", vehicle: "Remorcă peste 750 kg", body: "Se obține repede dacă ai deja categoria B. Manevre cu remorca în poligon și pe traseu.", age: "18 ani", hours: "15" },
+        { code: "Tr", name: "Tractor", vehicle: "Tractor și utilaje agricole", body: "Pentru lucrul în agricultură. Curs adaptat utilajelor pe care le folosești.", age: "18 ani", hours: "20" }
+      ],
+
+      prices: [
+        { code: "B", name: "Autoturism", hours: "30 ore", extra: "70 lei", price: "2.800 lei" },
+        { code: "A", name: "Motocicletă", hours: "20 ore", extra: "60 lei", price: "1.900 lei" },
+        { code: "C", name: "Camion", hours: "20 ore", extra: "120 lei", price: "3.900 lei" },
+        { code: "CE", name: "Camion cu remorcă", hours: "15 ore", extra: "140 lei", price: "3.200 lei" },
+        { code: "D", name: "Autobuz", hours: "20 ore", extra: "150 lei", price: "4.500 lei" },
+        { code: "BE", name: "Autoturism cu remorcă", hours: "15 ore", extra: "70 lei", price: "1.200 lei" },
+        { code: "Tr", name: "Tractor", hours: "20 ore", extra: "70 lei", price: "1.500 lei" }
+      ],
+
+      faq: faqData.map((f, i) => ({
+        q: f.q,
+        a: f.a,
+        open: this.state.openFaq === i,
+        sign: this.state.openFaq === i ? "–" : "+",
+        toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i }))
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
